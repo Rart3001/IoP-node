@@ -14,7 +14,7 @@ import java.nio.ByteBuffer;
  * The Class <code>com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.util.PackageEncoder</code>
  * encode the package object to json string format
  * <p/>
- * Created by Roberto Requena - (rart3001@gmail.com) on 30/11/15.
+ * Created by Matias Furszyfer
  *
  * @version 1.0
  * @since Java JDK 1.7
@@ -42,7 +42,6 @@ public class PackageEncoder implements Encoder.Binary<Package>{
                 destinationPublicKey);
         flatBufferBuilder.finish(pack);
         return flatBufferBuilder.dataBuffer();
-//         null;//(packageToSend!=null)? GsonProvider.getGson().toJson(packageToSend):null;
     }
 
     @Override

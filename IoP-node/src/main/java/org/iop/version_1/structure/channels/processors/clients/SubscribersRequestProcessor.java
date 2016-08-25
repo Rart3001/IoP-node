@@ -49,6 +49,8 @@ public class SubscribersRequestProcessor extends PackageProcessor {
 
         LOG.info("Processing new package received: " + packageReceived.getPackageType());
 
+        Package packageToReturn = null;
+
         //Represents the requester pk
         String destinationIdentityPublicKey = (String) session
                 .getUserProperties()
@@ -63,31 +65,64 @@ public class SubscribersRequestProcessor extends PackageProcessor {
 
             if (subscriberMsgRequest.getEventCode() == EventOp.EVENT_OP_IS_PROFILE_ONLINE){
                 //esto deberi ser con un count..
-                String id = JPADaoFactory.getActorCatalogDao().findValueById(subscriberMsgRequest.getCondition(),String.class,"id");
-                if (id!=null){
+                String sessionId = JPADaoFactory.getActorCatalogDao().findValueById(subscriberMsgRequest.getCondition(),String.class,"sessionId");
+                if (sessionId!=null){
                     JPADaoFactory.getEventListenerDao().save(new EventListener(packageReceived.getPackageId().toString(),session.getId(),subscriberMsgRequest.getEventCode(),subscriberMsgRequest.getCondition()));
+
+                    //Respond the request
+                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),
+                            ACKRespond.STATUS.SUCCESS,
+                            ACKRespond.STATUS.SUCCESS.toString());
+
+                    //Create instance
+                    if (session.isOpen()) {
+
+                        packageToReturn = Package.createInstance(
+                                ackRespond.toJson(),
+                                PackageType.ACK,
+                                channel.getChannelIdentity().getPrivateKey(),
+                                destinationIdentityPublicKey
+                        );
+
+                    } else {
+                        throw new IOException("connection is not opened.");
+                    }
+
+                }else{
+                    //actor is not online so return fail to subscribe
+
+                    ACKRespond ackRespond = new ACKRespond(
+                            packageReceived.getPackageId(),
+                            ACKRespond.STATUS.FAIL,
+                            "actor is not online"
+                    );
+
+                    packageToReturn = Package.createInstance(
+                            ackRespond.toJson()                      ,
+                            PackageType.ACK                         ,
+                            channel.getChannelIdentity().getPrivateKey(),
+                            destinationIdentityPublicKey
+                    );
+
                 }
-            }
+            }else {
+                //event is not known
 
-            //Respond the request
-            ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),
-                    ACKRespond.STATUS.SUCCESS,
-                    ACKRespond.STATUS.SUCCESS.toString());
+                //actor is not online so return fail to subscribe
 
-            //Create instance
-            if (session.isOpen()) {
+                ACKRespond ackRespond = new ACKRespond(
+                        packageReceived.getPackageId(),
+                        ACKRespond.STATUS.FAIL,
+                        "subscribe event is not known"
+                );
 
-                return Package.createInstance(
-                        ackRespond.toJson(),
-                        PackageType.ACK,
+                packageToReturn = Package.createInstance(
+                        ackRespond.toJson()                      ,
+                        PackageType.ACK                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-
-            } else {
-                throw new IOException("connection is not opened.");
             }
-
         } catch(Exception exception){
             try {
                 exception.printStackTrace();
@@ -101,7 +136,7 @@ public class SubscribersRequestProcessor extends PackageProcessor {
                         exception.getLocalizedMessage()
                 );
 
-                return Package.createInstance(
+                packageToReturn = Package.createInstance(
                         ackRespond.toJson()                      ,
                         PackageType.ACK                         ,
                         channel.getChannelIdentity().getPrivateKey(),
@@ -114,5 +149,6 @@ public class SubscribersRequestProcessor extends PackageProcessor {
                 return null;
             }
         }
+        return packageToReturn;
     }
 }
