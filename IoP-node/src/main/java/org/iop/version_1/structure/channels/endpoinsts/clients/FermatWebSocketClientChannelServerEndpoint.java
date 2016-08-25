@@ -174,46 +174,46 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
             SessionManager.remove(session);
             JPADaoFactory.getClientDao().checkOut(session.getId());
             //Este checkout deberia ser más controlado
-            List<String> listActorsCheckingOut = JPADaoFactory.getActorCatalogDao().checkOutAndGet(session.getId());
+//            List<String> listActorsCheckingOut = JPADaoFactory.getActorCatalogDao().checkOutAndGet(session.getId());
 
             //remover eventos que está escuchando la session ya que no va a recibir más.
-            try {
-                JPADaoFactory.getEventListenerDao().removeEventListenersFromSessionId(session.getId());
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try {
+//                JPADaoFactory.getEventListenerDao().removeEventListenersFromSessionId(session.getId());
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
 
             //subscribers
-            try {
-                List<EventListener> listEvent = JPADaoFactory.getEventListenerDao().getEventsForCodeAndConditions(EventOp.EVENT_OP_IS_PROFILE_ONLINE, listActorsCheckingOut);
-                // todo: hacerlo mejor
-                listEvent.forEach(e -> {
-                    try {
-                        EventPublishRespond eventPublishRespond = new EventPublishRespond(true);
-
-                        Session listenerSession = SessionManager.get(e.getSessionId());
-                        LOG.info("Sending event happen to session: "+e.getSessionId());
-                        if (listenerSession != null) {
-                            sendPackage(
-                                    listenerSession,
-                                    UUID.fromString(e.getId()),
-                                    eventPublishRespond.toJson(),
-                                    null,
-                                    PackageType.EVENT_PUBLISH,
-                                    null
-                            );
-                        }else LOG.info("Tenemos un problema en la db, hay eventListener que no se estan borrando cuando su session se cierra y quedan escuchando..");
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    } catch (EncodeException e1) {
-                        e1.printStackTrace();
-                    } catch (Exception e2){
-                        e2.printStackTrace();
-                    }
-                });
-            }catch (Exception e){
-                e.printStackTrace();
-            }
+//            try {
+//                List<EventListener> listEvent = JPADaoFactory.getEventListenerDao().getEventsForCodeAndConditions(EventOp.EVENT_OP_IS_PROFILE_ONLINE, listActorsCheckingOut);
+//                // todo: hacerlo mejor
+//                listEvent.forEach(e -> {
+//                    try {
+//                        EventPublishRespond eventPublishRespond = new EventPublishRespond(true);
+//
+//                        Session listenerSession = SessionManager.get(e.getSessionId());
+//                        LOG.info("Sending event happen to session: "+e.getSessionId());
+//                        if (listenerSession != null) {
+//                            sendPackage(
+//                                    listenerSession,
+//                                    UUID.fromString(e.getId()),
+//                                    eventPublishRespond.toJson(),
+//                                    null,
+//                                    PackageType.EVENT_PUBLISH,
+//                                    null
+//                            );
+//                        }else LOG.info("Tenemos un problema en la db, hay eventListener que no se estan borrando cuando su session se cierra y quedan escuchando..");
+//                    } catch (IOException e1) {
+//                        e1.printStackTrace();
+//                    } catch (EncodeException e1) {
+//                        e1.printStackTrace();
+//                    } catch (Exception e2){
+//                        e2.printStackTrace();
+//                    }
+//                });
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
 
             session.getOpenSessions().remove(session);
             LOG.info(" Open sessions: " + session.getOpenSessions().size());
