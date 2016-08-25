@@ -179,6 +179,11 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
                 predicates.add(actorFilter);
             }
 
+            // Search for online actors or for anybody
+            if (discoveryQueryParameters.isOnline()){
+                predicates.add(criteriaBuilder.isNotNull(entities.get("sessionId")));
+            }
+
 //             Add the conditions of the where
             criteriaQuery.where(predicates.toArray(new Predicate[predicates.size()]));
 

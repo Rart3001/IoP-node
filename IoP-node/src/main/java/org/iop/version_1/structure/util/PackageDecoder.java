@@ -5,6 +5,8 @@ import com.bitdubai.fermat_api.layer.all_definition.exceptions.InvalidParameterE
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.log4j.Logger;
 
 import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
@@ -19,6 +21,8 @@ import java.util.UUID;
  * @version 1.0
  * */
 public class PackageDecoder implements Decoder.Binary<Package>{
+
+    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(PackageDecoder.class.getName()));
 
     /**
      * (non-javadoc)
@@ -45,10 +49,9 @@ public class PackageDecoder implements Decoder.Binary<Package>{
             NetworkServiceType networkServiceType = null;
             if (pack.networkServiceType()!=null)
                 networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
-
             PackageType packageType = PackageType.buildWithInt(pack.packageType());
-            System.out.println("####### DECODE: PackageType: "+packageType+" Network service type: "+networkServiceType);
 
+            LOG.info("####### DECODE: PackageType: "+packageType+" Network service type: "+networkServiceType);
             if (networkServiceType!=null){
                 return Package.rebuildInstance(
                         UUID.fromString(
@@ -68,6 +71,7 @@ public class PackageDecoder implements Decoder.Binary<Package>{
 
 
         } catch (InvalidParameterException e) {
+            //imposible que tire esto, si lo tira hay algo muy mal
             e.printStackTrace();
         } catch (Exception e){
             e.printStackTrace();
