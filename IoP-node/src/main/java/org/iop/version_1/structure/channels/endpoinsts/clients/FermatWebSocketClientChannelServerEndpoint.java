@@ -91,7 +91,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
              */
             String cpki = (String) endpointConfig.getUserProperties().get(HeadersAttName.CPKI_ATT_HEADER_NAME);
 
-            String oldSessionId = JPADaoFactory.getClientDao().getSessionId(cpki);
+          /*  String oldSessionId = JPADaoFactory.getClientDao().getSessionId(cpki);
 
             if (oldSessionId != null && !oldSessionId.isEmpty()) {
 
@@ -103,7 +103,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
                         previousSession.close(new CloseReason(CloseReason.CloseCodes.NORMAL_CLOSURE, "Closing a Previous Session"));
                     }
                 }
-            }
+            } */
 
             SessionManager.add(session);
 
