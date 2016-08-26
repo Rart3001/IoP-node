@@ -135,10 +135,10 @@ public class ConfigurationManager {
 
         File file = new File(DIR_NAME+File.separator+FILE_NAME);
 
-        System.out.println(("ConfigurationFile path: "+file.getAbsolutePath()));
+        LOG.info("ConfigurationFile path: "+file.getAbsolutePath());
 
         if (!file.getParentFile().exists()){
-            System.out.println("Creating parents file");
+            LOG.info("Creating parents file");
             file.getParentFile().mkdirs();
         }
 
