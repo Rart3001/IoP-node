@@ -2,10 +2,11 @@ package org.iop.version_1.structure.channels.endpoinsts;
 
 import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair;
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.BytePackage;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.exception.PackageTypeNotSupportedException;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.log4j.Logger;
 import org.iop.version_1.IoPNodePluginRoot;
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.NodeContext;
@@ -14,7 +15,6 @@ import org.iop.version_1.structure.context.NodeContextItem;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 import java.io.IOException;
-import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -26,6 +26,11 @@ import java.util.UUID;
  * @since Java JDK 1.7
  */
 public abstract class FermatWebSocketChannelEndpoint {
+
+    /**
+     * Represent the LOG
+     */
+    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(FermatWebSocketChannelEndpoint.class.getName()));
 
     /**
      * Represent the MAX_MESSAGE_SIZE
@@ -43,17 +48,11 @@ public abstract class FermatWebSocketChannelEndpoint {
     private ECCKeyPair channelIdentity;
 
     /**
-     * Processors
-     */
-    private Map<String,PackageProcessor> packageProcessors;
-
-    /**
      * Constructor
      */
     public FermatWebSocketChannelEndpoint(){
         super();
-        this.channelIdentity = ((IoPNodePluginRoot) NodeContext.get(NodeContextItem.PLUGIN_ROOT)).getIdentity(); //new ECCKeyPair(); //
-        packageProcessors = getPackageProcessors();
+        this.channelIdentity = ((IoPNodePluginRoot) NodeContext.get(NodeContextItem.PLUGIN_ROOT)).getIdentity();
     }
 
     /**
@@ -81,38 +80,48 @@ public abstract class FermatWebSocketChannelEndpoint {
      * @param session
      */
     protected Package processMessage(Package packageReceived, Session session) throws PackageTypeNotSupportedException {
-        try {
-        /*
-         * Validate if can process the message
-         */
-            if (!packageProcessors.isEmpty()) {
 
+        try {
+
+            PackageProcessor packageProcessor = getPackageProcessors(packageReceived.getPackageType());
             /*
-             * process message and return package to the other side
+             * Validate if can process the message
              */
-                return packageProcessors.get(packageReceived.getPackageType().name()).processingPackage(session, packageReceived, this);
+            if (packageProcessor != null){
+
+                /*
+                 * Process the message
+                 */
+                return packageProcessor.processingPackage(session, packageReceived, this);
 
             } else {
 
-                throw new PackageTypeNotSupportedException("The package type: " + packageReceived.getPackageType() + " is not supported");
+                throw new PackageTypeNotSupportedException("The package type: "+packageReceived.getPackageType()+" is not supported");
             }
+
         }catch (IOException e) {
-            //todo: ver que pasa cuando la session está caida, quizás no deba hacer anda acá
-            e.printStackTrace();
+
+            LOG.error("error processing package: "+e);
+            LOG.error("packageReceived: "+packageReceived);
             return null;
         }
     }
 
-
-    public synchronized final void sendPackage(Package p,Session session) throws IOException, EncodeException {
-        if (session.isOpen()) {
-            session.getBasicRemote().sendObject(p);
-        } else {
-            throw new IOException("connection is not opened.");
-        }
-    }
-
+    /**
+     * Send a package
+     *
+     * @param session
+     * @param packageId
+     * @param packageContent
+     * @param networkServiceType
+     * @param packageType
+     * @param destinationIdentityPublicKey
+     * @throws IOException
+     * @throws EncodeException
+     * @throws IllegalArgumentException
+     */
     public void sendPackage(Session session, UUID packageId, String packageContent, NetworkServiceType networkServiceType, PackageType packageType, String destinationIdentityPublicKey) throws IOException, EncodeException, IllegalArgumentException {
+
         if (session==null) throw new IllegalArgumentException("Session can't be null");
         if (session.isOpen()) {
             Package packageRespond = Package.createInstance(
@@ -130,38 +139,11 @@ public abstract class FermatWebSocketChannelEndpoint {
         }
     }
 
-
-
-    public synchronized final void sendPackage(final Session            session           ,
-                                               final byte[]             packageContent    ,
-                                               final NetworkServiceType networkServiceType,
-                                               final PackageType        packageType       ,
-                                               final String             identityPublicKey ) throws EncodeException, IOException {
-
-        if (session.isOpen()) {
-
-            BytePackage packageRespond = BytePackage.createInstance(
-                    packageContent                      ,
-                    networkServiceType                  ,
-                    packageType                         ,
-                    getChannelIdentity().getPrivateKey(),
-                    identityPublicKey
-            );
-            //todo: improve this, binario
-            session.getBasicRemote().sendObject(packageRespond);
-        } else {
-            throw new IOException("connection is not opened.");
-        }
-    }
-
-
-
     /**
-     * Gets the value of packageProcessors and returns
+     * Gets a packageProcessors and returns
      *
-     * @return packageProcessors
+     * @return packageProcessor
      */
-    protected abstract Map<String,PackageProcessor> getPackageProcessors();
-
+    protected abstract PackageProcessor getPackageProcessors(PackageType packageType);
 
 }
