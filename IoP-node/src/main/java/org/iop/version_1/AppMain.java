@@ -4,6 +4,8 @@ import com.bitdubai.fermat_api.layer.osa_android.file_system.PluginFileSystem;
 import com.bitdubai.fermat_api.layer.osa_android.location_system.LocationManager;
 import com.bitdubai.fermat_osa_addon.layer.linux.device_location.developer.bitdubai.version_1.DeviceLocationSystemAddonRoot;
 import com.bitdubai.fermat_osa_addon.layer.linux.file_system.developer.bitdubai.version_1.PluginFileSystemLinuxAddonRoot;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.log4j.Logger;
 
 import java.text.NumberFormat;
 import java.util.concurrent.Executors;
@@ -16,9 +18,9 @@ import java.util.concurrent.TimeUnit;
 public class AppMain {
 
     /**
-     * Represent the fermatSystem instance
+     * Represent the LOG
      */
-
+    private static final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(AppMain.class));
     /**
      * org.iop.version_1.AppMain method
      *
@@ -28,13 +30,12 @@ public class AppMain {
 
         try {
 
-            System.out.println("***********************************************************************");
-            System.out.println("* FERMAT - Network Node - Version 1.0 (2016)                            *");
-            System.out.println("* www.fermat.org                                                      *");
-            System.out.println("***********************************************************************");
-            System.out.println("");
-            System.out.println("- Starting process ...");
-
+            LOG.info("***********************************************************************");
+            LOG.info("* FERMAT - Network Node - Version 1.0 (2016)                            *");
+            LOG.info("* www.fermat.org                                                      *");
+            LOG.info("***********************************************************************");
+            LOG.info("");
+            LOG.info("- Starting process ...");
 
             ScheduledExecutorService scheduledExecutorScheduler = Executors.newSingleThreadScheduledExecutor();
             scheduledExecutorScheduler.scheduleAtFixedRate(new Runnable() {
@@ -54,7 +55,7 @@ public class AppMain {
                     sb.append("max memory: " + format.format((maxMemory / 1024 / 1024)) + " mb / ");
                     sb.append("total free memory: " + format.format(((freeMemory + (maxMemory - allocatedMemory)) / 1024 / 1024)) + " mb ");
 
-                    System.out.println(sb.toString());
+                    LOG.info(sb.toString());
                 }
             },0,30, TimeUnit.SECONDS);
 
@@ -70,13 +71,13 @@ public class AppMain {
             ioPNodePluginRoot.setPluginFileSystem((PluginFileSystem) pluginFileSystemLinuxAddonRoot.getManager());
             ioPNodePluginRoot.start();
 
-            System.out.println("FERMAT - Network Node - started satisfactory...");
+            LOG.info("FERMAT - Network Node - started satisfactory...");
 
         } catch (Exception e) {
 
-            System.out.println("***********************************************************************");
-            System.out.println("* FERMAT - ERROR                                                      *");
-            System.out.println("***********************************************************************");
+            LOG.error("***********************************************************************");
+            LOG.error("* FERMAT - ERROR                                                      *");
+            LOG.error("***********************************************************************");
             e.printStackTrace();
             System.exit(1);
         }
