@@ -136,6 +136,17 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
 
         if (!Arrays.equals(actorProfile.getPhoto(), actorsCatalogToUpdate.getPhoto())) {
             actorsCatalogToUpdate.setPhoto(actorProfile.getPhoto());
+
+            byte[] thumbnail = null;
+            if (actorProfile.getPhoto() != null && actorProfile.getPhoto().length > 0) {
+                try {
+                    thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            actorsCatalogToUpdate.setThumbnail(thumbnail);
             hasChanges = true;
         }
 
@@ -184,10 +195,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         if (actorProfile.getPhoto() != null && actorProfile.getPhoto().length > 0) {
             try {
                 thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
-            }catch (NoClassDefFoundError e){
-                e.printStackTrace();
             }catch (Exception e){
-                //fijarse esto...
                 e.printStackTrace();
             }
         }
