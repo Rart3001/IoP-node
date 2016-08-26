@@ -23,9 +23,7 @@ import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * The Class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.processors.clients.ActorListRequestProcessor</code>
@@ -61,7 +59,6 @@ public class ActorListRequestProcessor extends PackageProcessor {
         LOG.info("Processing new package received " + packageReceived.getPackageType());
 
         String destinationIdentityPublicKey = (String) session.getUserProperties().get(HeadersAttName.CPKI_ATT_HEADER_NAME);
-
         ActorListMsgRequest messageContent = ActorListMsgRequest.parseContent(packageReceived.getContent());
 
         try {
@@ -80,9 +77,9 @@ public class ActorListRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         packageReceived.getPackageId(),
-                        actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
-                        PackageType.ACTOR_LIST_REQUEST                         ,
+                        actorListMsgRespond.toJson(),
+                        packageReceived.getNetworkServiceTypeSource(),
+                        PackageType.ACTOR_LIST_REQUEST,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
@@ -90,15 +87,13 @@ public class ActorListRequestProcessor extends PackageProcessor {
             } else {
                 throw new IOException("connection is not opened.");
             }
-//            channel.sendPackage(session, actorListMsgRespond.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACTOR_LIST_REQUEST, destinationIdentityPublicKey);
 
         } catch (Exception exception){
 
             try {
 
+                LOG.error(exception);
 
-                exception.printStackTrace();
-                LOG.error(exception.getMessage());
                 /*
                  * Respond whit fail message
                  */
@@ -110,14 +105,12 @@ public class ActorListRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         packageReceived.getPackageId(),
-                        actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
-                        PackageType.ACTOR_LIST_REQUEST                         ,
+                        actorListMsgRespond.toJson(),
+                        packageReceived.getNetworkServiceTypeSource(),
+                        PackageType.ACTOR_LIST_REQUEST,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-
-//                channel.sendPackage(session, actorListMsgRespond.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACTOR_LIST_REQUEST, destinationIdentityPublicKey);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -137,47 +130,38 @@ public class ActorListRequestProcessor extends PackageProcessor {
      */
     private List<ActorProfile> filterActors(final DiscoveryQueryParameters discoveryQueryParameters, String requesterPublicKey) throws CantReadRecordDataBaseException {
 
-        Map<String, ActorProfile> profileList = new HashMap<>();
-
-        List<ActorCatalog> actorsList;
-
         int max    = 10;
         int offset =  0;
 
         if (discoveryQueryParameters.getMax() != null && discoveryQueryParameters.getMax() > 0)
-            max = (discoveryQueryParameters.getMax() > 20) ? 20 : discoveryQueryParameters.getMax();
+            max = (discoveryQueryParameters.getMax() > 100) ? 100 : discoveryQueryParameters.getMax();
 
         if (discoveryQueryParameters.getOffset() != null && discoveryQueryParameters.getOffset() >= 0)
             offset = discoveryQueryParameters.getOffset();
 
-        actorsList = JPADaoFactory.getActorCatalogDao().findAll(discoveryQueryParameters, requesterPublicKey, max, offset);
+        List<ActorProfile> resultList = null;
+        List<ActorCatalog> actorsList = JPADaoFactory.getActorCatalogDao().findAll(discoveryQueryParameters, requesterPublicKey, max, offset);
 
-        if (discoveryQueryParameters.isOnline())
-            for (ActorCatalog actorsCatalog : actorsList)
-                profileList.put(actorsCatalog.getId(), buildActorProfileFromActorCatalogRecordAndSetStatus(actorsCatalog));
-        else
-            for (ActorCatalog actorsCatalog : actorsList)
-                profileList.put(actorsCatalog.getId(), actorsCatalog.getActorProfile());
+        if (actorsList != null && !actorsList.isEmpty()) {
+            resultList = new ArrayList<>();
+            for (ActorCatalog actorCatalog: actorsList) {
+                resultList.add(buildActorProfileFromActorCatalogAndSetStatus(actorCatalog));
+            }
+        }
 
-        return new ArrayList<>(profileList.values());
+        return resultList;
     }
 
     /**
      * Build an Actor Profile from an Actor Catalog record and set its status.
      */
-    private ActorProfile buildActorProfileFromActorCatalogRecordAndSetStatus(final ActorCatalog actor){
+    private ActorProfile buildActorProfileFromActorCatalogAndSetStatus(final ActorCatalog actor){
 
-        ActorProfile actorProfile = new ActorProfile();
+        ActorProfile actorProfile = actor.getActorProfile();
 
-        actorProfile.setIdentityPublicKey(actor.getId());
-        actorProfile.setAlias(actor.getAlias());
-        actorProfile.setName(actor.getName());
-        actorProfile.setActorType(actor.getActorType());
-        actorProfile.setPhoto(actor.getPhoto());
-        actorProfile.setExtraData(actor.getExtraData());
-        actorProfile.setLocation(actor.getLocation());
-
-        actorProfile.setStatus(isActorOnline(actor));
+        if (actorProfile.getStatus().equals(ProfileStatus.UNKNOWN) ){
+            actorProfile.setStatus(isActorOnline(actor));
+        }
 
         return actorProfile;
     }
@@ -194,18 +178,21 @@ public class ActorListRequestProcessor extends PackageProcessor {
      */
     private ProfileStatus isActorOnline(ActorCatalog actorsCatalog) {
 
+
         try {
 
-            if(actorsCatalog.getHomeNode().getId().equals(getNetworkNodePluginRoot().getIdentity().getPublicKey())) {
-                //todo: buscar la session
+            if((actorsCatalog.getHomeNode() != null) &&
+                    (actorsCatalog.getHomeNode().getId().equals(getNetworkNodePluginRoot().getIdentity().getPublicKey()))) {
+
                 if (actorsCatalog.getSessionId() != null)
                     return ProfileStatus.ONLINE;
                 else
                     return ProfileStatus.OFFLINE;
 
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
+            LOG.error(e);
             return ProfileStatus.UNKNOWN;
         }
         return ProfileStatus.OFFLINE;
