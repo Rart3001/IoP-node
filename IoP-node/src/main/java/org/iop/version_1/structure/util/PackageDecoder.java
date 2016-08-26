@@ -22,6 +22,9 @@ import java.util.UUID;
  * */
 public class PackageDecoder implements Decoder.Binary<Package>{
 
+    /**
+     * Represent the LOG
+     */
     private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(PackageDecoder.class.getName()));
 
     /**
@@ -44,15 +47,17 @@ public class PackageDecoder implements Decoder.Binary<Package>{
 
     @Override
     public Package decode(ByteBuffer bytes) throws DecodeException {
-        LOG.info("Decoding package, size: "+bytes.limit());
+
+        LOG.debug("Decoding package, size: "+bytes.limit());
         com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package pack = com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package.getRootAsPackage(bytes);
+
         try {
             NetworkServiceType networkServiceType = null;
             if (pack.networkServiceType()!=null)
                 networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
             PackageType packageType = PackageType.buildWithInt(pack.packageType());
 
-            LOG.info("####### DECODE: PackageType: "+packageType+" Network service type: "+networkServiceType);
+            LOG.debug("####### DECODE: PackageType: "+packageType+" Network service type: "+networkServiceType);
             if (networkServiceType!=null){
                 return Package.rebuildInstance(
                         UUID.fromString(
