@@ -55,13 +55,8 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             final String requesterPublicKey,
             Integer max,
             Integer offset) throws CantReadRecordDataBaseException {
-        LOG.debug("Executing list(" +
-                discoveryQueryParameters +
-                ", " +
-                max +
-                ", " +
-                offset +
-                ")");
+
+        LOG.debug("Executing list(" + discoveryQueryParameters + ", " +  max + ", " + offset + ")");
         EntityManager connection = getConnection();
         connection.setProperty("javax.persistence.cache.storeMode", CacheStoreMode.BYPASS);
 
@@ -70,9 +65,23 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             CriteriaQuery<ActorCatalog> criteriaQuery = criteriaBuilder.createQuery(entityClass);
             Root<ActorCatalog> entities = criteriaQuery.from(entityClass);
             criteriaQuery.select(entities);
+
+            /*
+             * Construct de entity whit a specific constructor for
+             * no load all attribute, only the necessary to feel a ActorProfile
+             */
+            criteriaQuery.select(criteriaBuilder.construct(ActorCatalog.class, entities.get("id"),
+                                                                               entities.get("location"),
+                                                                               entities.get("actorType"),
+                                                                               entities.get("alias"),
+                                                                               entities.get("extraData"),
+                                                                               entities.get("name"),
+                                                                               entities.get("thumbnail"),
+                                                                               entities.get("session"),
+                                                                               entities.get("homeNode.id")));
+
             BasicGeoRectangle basicGeoRectangle = new BasicGeoRectangle();
-            Map<String, Object> filters = buildFilterGroupFromDiscoveryQueryParameters(
-                    discoveryQueryParameters);
+            Map<String, Object> filters = buildFilterGroupFromDiscoveryQueryParameters(discoveryQueryParameters);
 
             List<Predicate> predicates = new ArrayList<>();
             //Verify that the filters are not empty
@@ -172,7 +181,6 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             }
 
             //Filter the requester actor
-
             if (requesterPublicKey != null && !requesterPublicKey.isEmpty()) {
                 Path<Object> path = entities.get("id");
                 Predicate actorFilter = criteriaBuilder.notEqual(path, requesterPublicKey);
@@ -406,9 +414,6 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
 
         try {
 
-            if(entity.getClientIdentityPublicKey()==null){
-                entity.setClientIdentityPublicKey(UUID.randomUUID().toString());
-            }
             transaction.begin();
             connection.persist(entity);
             connection.flush();
