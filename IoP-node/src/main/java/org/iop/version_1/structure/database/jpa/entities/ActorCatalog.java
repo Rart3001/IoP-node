@@ -606,7 +606,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
         actorProfile.setAlias(this.getAlias());
         actorProfile.setName(this.getName());
         actorProfile.setActorType(this.getActorType());
-        actorProfile.setPhoto(this.getPhoto());
         actorProfile.setPhoto(this.getThumbnail());
         actorProfile.setExtraData(this.getExtraData());
         actorProfile.setLocation(this.getLocation());

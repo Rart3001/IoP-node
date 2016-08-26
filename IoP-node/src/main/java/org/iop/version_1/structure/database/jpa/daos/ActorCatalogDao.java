@@ -64,21 +64,7 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             CriteriaBuilder criteriaBuilder = connection.getCriteriaBuilder();
             CriteriaQuery<ActorCatalog> criteriaQuery = criteriaBuilder.createQuery(entityClass);
             Root<ActorCatalog> entities = criteriaQuery.from(entityClass);
-            criteriaQuery.select(entities);
-
-            /*
-             * Construct de entity whit a specific constructor for
-             * no load all attribute, only the necessary to feel a ActorProfile
-             */
-            criteriaQuery.select(criteriaBuilder.construct(ActorCatalog.class, entities.get("id"),
-                                                                               entities.get("location"),
-                                                                               entities.get("actorType"),
-                                                                               entities.get("alias"),
-                                                                               entities.get("extraData"),
-                                                                               entities.get("name"),
-                                                                               entities.get("thumbnail"),
-                                                                               entities.get("session"),
-                                                                               entities.get("homeNode.id")));
+            criteriaQuery.multiselect(entities);
 
             BasicGeoRectangle basicGeoRectangle = new BasicGeoRectangle();
             Map<String, Object> filters = buildFilterGroupFromDiscoveryQueryParameters(discoveryQueryParameters);
@@ -205,6 +191,9 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             return query.getResultList();
 
         } catch (Exception e){
+
+            e.printStackTrace();
+
             throw new CantReadRecordDataBaseException(
                     e,
                     "Network Node",

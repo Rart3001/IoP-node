@@ -31,7 +31,7 @@ public class AppMain {
         try {
 
             LOG.info("***********************************************************************");
-            LOG.info("* FERMAT - Network Node - Version 1.0 (2016)                            *");
+            LOG.info("* FERMAT - Network Node - Version 1.0 (2016)                          *");
             LOG.info("* www.fermat.org                                                      *");
             LOG.info("***********************************************************************");
             LOG.info("");
@@ -59,10 +59,9 @@ public class AppMain {
                 }
             },0,30, TimeUnit.SECONDS);
 
-
             DeviceLocationSystemAddonRoot deviceLocationSystemAddonRoot = new DeviceLocationSystemAddonRoot();
             deviceLocationSystemAddonRoot.start();
-//
+
             PluginFileSystemLinuxAddonRoot pluginFileSystemLinuxAddonRoot = new PluginFileSystemLinuxAddonRoot();
             pluginFileSystemLinuxAddonRoot.start();
 
