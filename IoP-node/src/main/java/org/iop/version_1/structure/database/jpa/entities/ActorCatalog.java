@@ -4,6 +4,7 @@
  */
 package org.iop.version_1.structure.database.jpa.entities;
 
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileStatus;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ActorProfile;
 import com.google.gson.annotations.Expose;
 
@@ -11,7 +12,6 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.UUID;
 
 /**
  * The class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.database.jpa.entities.ActorCatalog</code>
@@ -162,10 +162,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
     @Expose(serialize = false, deserialize = false)
     private Integer triedToPropagateTimes;
 
-    /**
-     * Represents the client identity public key.
-     */
-    private String clientIdentityPublicKey;
 
     /**
      * Constructor with parameters
@@ -189,16 +185,39 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
         this.homeNode = new NodeCatalog(homeNodePublicKey);
         this.sessionId = null;
         this.signature = signature;
-        this.clientIdentityPublicKey = actorProfile.getClientIdentityPublicKey();
-        if(clientIdentityPublicKey==null){
-            this.clientIdentityPublicKey= UUID.randomUUID().toString();
-        }
 
         if (actorProfile.getLocation() != null){
             this.location = new GeoLocation(this.id, actorProfile.getLocation().getLatitude(), actorProfile.getLocation().getLongitude());
         }else {
             this.location = null;
         }
+    }
+
+    /**
+     * Constructor with parameters, this constructor
+     * feel the attribute used for complete a ActorProfile
+     * only no extra data load
+     *
+     * @param id
+     * @param location
+     * @param actorType
+     * @param alias
+     * @param extraData
+     * @param name
+     * @param thumbnail
+     * @param sessionId
+     * @param homeNodeId
+     */
+    public ActorCatalog(String id, GeoLocation location, String actorType, String alias, String extraData, String name, byte[] thumbnail, String sessionId, String homeNodeId) {
+        this.id = id;
+        this.location = location;
+        this.actorType = actorType;
+        this.alias = alias;
+        this.extraData = extraData;
+        this.name = name;
+        this.thumbnail = thumbnail;
+        this.sessionId = sessionId;
+        this.homeNode = new NodeCatalog(homeNodeId);
     }
 
     /**
@@ -541,14 +560,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
 
     }
 
-    public String getClientIdentityPublicKey() {
-        return clientIdentityPublicKey;
-    }
-
-    public void setClientIdentityPublicKey(String clientIdentityPublicKey) {
-        this.clientIdentityPublicKey = clientIdentityPublicKey;
-    }
-
     /**
      * (non-javadoc)
      * @see AbstractBaseEntity@hashCode()
@@ -599,12 +610,13 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
         actorProfile.setPhoto(this.getThumbnail());
         actorProfile.setExtraData(this.getExtraData());
         actorProfile.setLocation(this.getLocation());
+        actorProfile.setHomeNodeIdentifier(this.getHomeNode().getId());
 
-//        if (session != null){
-//            actorProfile.setStatus(ProfileStatus.ONLINE);
-//        }else {
-//            actorProfile.setStatus(ProfileStatus.UNKNOWN);
-//        }
+        if (sessionId != null){
+            actorProfile.setStatus(ProfileStatus.ONLINE);
+        }else {
+            actorProfile.setStatus(ProfileStatus.UNKNOWN);
+        }
 
         return actorProfile;
     }
