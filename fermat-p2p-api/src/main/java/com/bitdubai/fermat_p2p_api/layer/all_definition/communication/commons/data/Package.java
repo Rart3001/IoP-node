@@ -273,33 +273,33 @@ public class Package implements Serializable {
     }
 
 
-    public static Package rebuildInstance(final UUID packageId,
-                                          final String             content                     ,
-                                          final NetworkServiceType networkServiceTypeSource    ,
-                                          final PackageType        packageType                 ,
-                                          final String             destinationIdentityPublicKey) {
-
-
-//        String messageHash = AsymmetricCryptography.encryptMessagePublicKey(
-//                content,
+//    public static Package rebuildInstance(final UUID packageId,
+//                                          final String             content                     ,
+////                                          final NetworkServiceType networkServiceTypeSource    ,
+//                                          final PackageType        packageType                 ,
+//                                          final String             destinationIdentityPublicKey) {
+//
+//
+////        String messageHash = AsymmetricCryptography.encryptMessagePublicKey(
+////                content,
+////                destinationIdentityPublicKey
+////        );
+////
+////        String signature   = AsymmetricCryptography.createMessageSignature(
+////                messageHash,
+////                senderPrivateKey
+////        );
+//
+//
+//        return new Package(
+//                packageId,
+//                content                     ,
+////                networkServiceTypeSource    ,
+//                packageType                 ,
+//                null                   ,
 //                destinationIdentityPublicKey
 //        );
-//
-//        String signature   = AsymmetricCryptography.createMessageSignature(
-//                messageHash,
-//                senderPrivateKey
-//        );
-
-
-        return new Package(
-                packageId,
-                content                     ,
-                networkServiceTypeSource    ,
-                packageType                 ,
-                null                   ,
-                destinationIdentityPublicKey
-        );
-    }
+//    }
 
     public static Package rebuildInstance(final UUID packageId,
                                           final String             content                     ,

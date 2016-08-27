@@ -3,11 +3,11 @@ package org.iop.version_1.structure.util;
 import net.coobird.thumbnailator.Thumbnails;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.net.URLConnection;
+import java.util.Iterator;
 
 /**
  * The Class <code>com.bitdubai.fermat_api.layer.all_definition.util.ImageUtil</code> It provides some
@@ -52,7 +52,6 @@ public class ThumbnailUtil {
      * @throws IOException
      */
     public static  byte [] getByteArray(BufferedImage originalImage, String format) throws IOException {
-
         ByteArrayOutputStream temporal = new ByteArrayOutputStream();
         ImageIO.write(originalImage, format, temporal);
         temporal.close();
@@ -70,12 +69,27 @@ public class ThumbnailUtil {
      * @throws IOException
      */
     public static BufferedImage getBufferedImage(byte [] data) throws IOException {
-
         InputStream inputStream = new ByteArrayInputStream(data);
         BufferedImage bufferedImage = ImageIO.read(inputStream);
         inputStream.close();
-
         return bufferedImage;
+    }
+
+    public static String getImageMimeType(byte[] data){
+        InputStream is = new BufferedInputStream(new ByteArrayInputStream(data));
+        String mimeType = null;
+        try {
+            mimeType = URLConnection.guessContentTypeFromStream(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("###Mime type: "+mimeType);
+        try {
+            is.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return mimeType;
     }
 
 }
