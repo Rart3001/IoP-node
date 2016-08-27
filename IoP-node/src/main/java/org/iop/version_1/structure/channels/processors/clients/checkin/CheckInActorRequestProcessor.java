@@ -69,23 +69,35 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
 
         try {
 
-            ActorCatalogDao actorCatalogDao = JPADaoFactory.getActorCatalogDao();
-
-            if (actorCatalogDao.exist(actorProfile.getIdentityPublicKey())) {
-                checkUpdatesAndCheckIn(actorProfile, actorCatalogDao,session.getId());
-            } else {
-                createAndCheckIn(actorProfile, actorCatalogDao,session.getId());
+            byte[] thumbnail = null;
+            if (actorProfile.getPhoto() != null && actorProfile.getPhoto().length > 0) {
+                try {
+                    thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
+                }catch (Exception e){
+                    LOG.error(e);
+                }
             }
+
+            /*
+             * Create the actor catalog
+             */
+            ActorCatalog actorCatalog = new ActorCatalog(actorProfile, thumbnail, getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey(), "");
+            actorCatalog.setSession(session.getId());
+            JPADaoFactory.getActorCatalogDao().save(actorCatalog);
+
             LOG.info("Registered new Actor = "+actorProfile.getName());
+
             /*
              * If all ok, respond whit success message
              */
             ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
 
+
+            LOG.info("------------------ Processing finish ------------------");
             return Package.createInstance(
-                    respondProfileCheckInMsj.toJson()                      ,
-                    packageReceived.getNetworkServiceTypeSource()                  ,
-                    PackageType.CHECK_IN_ACTOR_RESPONSE                         ,
+                    respondProfileCheckInMsj.toJson(),
+                    packageReceived.getNetworkServiceTypeSource(),
+                    PackageType.CHECK_IN_ACTOR_RESPONSE,
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
             );
@@ -93,7 +105,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         }catch (Exception exception){
 
             try {
-                exception.printStackTrace();
+
                 LOG.error(exception);
 
                 /*
@@ -101,15 +113,14 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
                  */
                 ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.FAIL, exception.getLocalizedMessage());
 
+                LOG.info("------------------ Processing finish ------------------");
                 return Package.createInstance(
-                        respondProfileCheckInMsj.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
-                        PackageType.CHECK_IN_ACTOR_RESPONSE                         ,
+                        respondProfileCheckInMsj.toJson(),
+                        packageReceived.getNetworkServiceTypeSource(),
+                        PackageType.CHECK_IN_ACTOR_RESPONSE,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-
-//                channel.sendPackage(session, respondProfileCheckInMsj.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACK, destinationIdentityPublicKey);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -198,9 +209,7 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
                 thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
             }catch (IIOException e){
                 LOG.warn("### Thubnail fail, Image corrupted.");
-            }catch (NoClassDefFoundError e){
-                e.printStackTrace();
-            }catch (Exception e){
+            } catch (Exception e){
                 e.printStackTrace();
             }
         }
