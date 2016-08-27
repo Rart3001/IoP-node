@@ -22,6 +22,7 @@ import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
 import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
 import org.iop.version_1.structure.util.ThumbnailUtil;
 
+import javax.imageio.IIOException;
 import javax.websocket.Session;
 import java.io.IOException;
 import java.sql.Timestamp;
@@ -184,6 +185,8 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
         if (actorProfile.getPhoto() != null && actorProfile.getPhoto().length > 0) {
             try {
                 thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
+            }catch (IIOException e){
+                LOG.warn("### Thubnail fail, Image corrupted.");
             }catch (NoClassDefFoundError e){
                 e.printStackTrace();
             }catch (Exception e){
