@@ -3,11 +3,13 @@ package org.iop.version_1.structure.util;
 import net.coobird.thumbnailator.Thumbnails;
 
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Iterator;
 
 /**
  * The Class <code>com.bitdubai.fermat_api.layer.all_definition.util.ImageUtil</code> It provides some
@@ -52,7 +54,6 @@ public class ThumbnailUtil {
      * @throws IOException
      */
     public static  byte [] getByteArray(BufferedImage originalImage, String format) throws IOException {
-
         ByteArrayOutputStream temporal = new ByteArrayOutputStream();
         ImageIO.write(originalImage, format, temporal);
         temporal.close();

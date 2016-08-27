@@ -47,34 +47,18 @@ public class PackageDecoder implements Decoder.Binary<Package>{
         LOG.info("Decoding package, size: "+bytes.limit());
         com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package pack = com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package.getRootAsPackage(bytes);
         try {
-            NetworkServiceType networkServiceType = null;
-            if (pack.networkServiceType()!=null)
-                networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
+//            if (pack.networkServiceType()!=null)
+//                networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
             PackageType packageType = PackageType.buildWithInt(pack.packageType());
-
-            LOG.info("####### DECODE: PackageType: "+packageType+" Network service type: "+networkServiceType);
-            if (networkServiceType!=null){
-                return Package.rebuildInstance(
-                        UUID.fromString(
-                                pack.id()),
-                        pack.content(),
-                        networkServiceType,
-                        packageType,
-                        pack.destinationPk()
-                );
-            }else{
-                return Package.rebuildInstance(
-                        UUID.fromString(pack.id()),
-                        pack.content(),
-                        packageType,
-                        pack.destinationPk());
-            }
+            return Package.rebuildInstance(
+                    UUID.fromString(pack.id()),
+                    pack.content(),
+                    packageType,
+                    pack.destinationPk());
 
 
-        } catch (InvalidParameterException e) {
-            //imposible que tire esto, si lo tira hay algo muy mal
-            e.printStackTrace();
-        } catch (Exception e){
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;

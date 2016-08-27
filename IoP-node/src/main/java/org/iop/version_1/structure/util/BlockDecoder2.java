@@ -53,17 +53,17 @@ public class BlockDecoder2 implements Decoder.Binary<BlockPackages>{
             for (int i=0;i<block.packagesLength();i++){
                 try {
                     Package pack = block.packages(i);
-                    NetworkServiceType networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
+//                    NetworkServiceType networkServiceType = NetworkServiceType.getByCode(pack.networkServiceType());
                     PackageType packageType = PackageType.buildWithInt(pack.packageType());
-                    LOG.info("####### DECODE: PackageType: " + packageType + " Network service type: " + networkServiceType);
-                    blockPackages.add(com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package.rebuildInstance(
-                            UUID.fromString(
-                                    pack.id()),
-                            pack.content(),
-                            networkServiceType,
-                            packageType,
-                            pack.destinationPk()
-                    ));
+//                    LOG.info("####### DECODE: PackageType: " + packageType + " Network service type: " + networkServiceType);
+//                    blockPackages.add(com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package.rebuildInstance(
+//                            UUID.fromString(
+//                                    pack.id()),
+//                            pack.content(),
+//                            networkServiceType,
+//                            packageType,
+//                            pack.destinationPk()
+//                    ));
                 }catch (Exception e){
                     e.printStackTrace();
                 }
