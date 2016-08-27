@@ -17,12 +17,10 @@ import org.iop.version_1.structure.context.NodeContextItem;
 import org.iop.version_1.structure.database.jpa.daos.ActorCatalogDao;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
-import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
+import org.iop.version_1.structure.util.ThumbnailUtil;
 
 import javax.websocket.Session;
 import java.io.IOException;
-import java.sql.Timestamp;
-import java.util.Arrays;
 
 /**
  * Created by Manuel Perez P. (darkpriestrelative@gmail.com) on 16/08/16.
@@ -69,93 +67,65 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
         ActorProfile actorProfile = (ActorProfile) updateActorProfileMsgRequest.getProfileToUpdate();
 
         try{
-            //Get the profile from node database
+
             ActorCatalogDao actorCatalogDao = JPADaoFactory.getActorCatalogDao();
+            ACKRespond updateMsgRespond;
 
-            ActorCatalog actorsCatalogToUpdate = actorCatalogDao.findById(actorProfile.getIdentityPublicKey());
+            if (actorCatalogDao.exist(actorProfile.getIdentityPublicKey())) {
 
-            ACKRespond isActorOnlineMsgRespond;
-
-            if (actorsCatalogToUpdate != null) {
-
-                boolean hasChanges = false;
-
-                if (!actorProfile.getName().equals(actorsCatalogToUpdate.getName())) {
-                    actorsCatalogToUpdate.setName(actorProfile.getName());
-                    hasChanges = true;
+                byte[] thumbnail = null;
+                if (actorProfile.getPhoto() != null && actorProfile.getPhoto().length > 0) {
+                    try {
+                        thumbnail = ThumbnailUtil.generateThumbnail(actorProfile.getPhoto());
+                    }catch (Exception e){
+                        LOG.error(e);
+                    }
                 }
 
-                if (!actorProfile.getAlias().equals(actorsCatalogToUpdate.getAlias())) {
-                    actorsCatalogToUpdate.setAlias(actorProfile.getAlias());
-                    hasChanges = true;
-                }
+                ActorCatalog actorCatalogToUpdate = new ActorCatalog(actorProfile, thumbnail, getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey(), "");
+                actorCatalogToUpdate.setThumbnail(thumbnail);
+                actorCatalogDao.update(actorCatalogToUpdate);
 
-                if (!Arrays.equals(actorProfile.getPhoto(), actorsCatalogToUpdate.getPhoto())) {
-                    actorsCatalogToUpdate.setPhoto(actorProfile.getPhoto());
-                    hasChanges = true;
-                }
+                /*
+                 * Respond whit success message
+                 */
+                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
 
-                if (!getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey().equals(actorsCatalogToUpdate.getHomeNode().getId())) {
-                    actorsCatalogToUpdate.setHomeNode(new NodeCatalog(getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey()));
-                    hasChanges = true;
-                }
-
-                if (actorProfile.getLocation() != null && actorsCatalogToUpdate.getLocation() != null && !actorProfile.getLocation().equals(actorsCatalogToUpdate.getLocation())) {
-                    actorsCatalogToUpdate.setLocation(actorProfile.getLocation().getLatitude(), actorProfile.getLocation().getLongitude());
-                    hasChanges = true;
-                }
-
-                LOG.info("hasChanges = " + hasChanges);
-
-                if (hasChanges) {
-
-                    Timestamp currentMillis = new Timestamp(System.currentTimeMillis());
-
-                    actorsCatalogToUpdate.setLastConnection(currentMillis);
-                    actorsCatalogToUpdate.setLastUpdateTime(currentMillis);
-                    actorsCatalogToUpdate.setVersion(actorsCatalogToUpdate.getVersion() + 1);
-                    actorsCatalogToUpdate.setTriedToPropagateTimes(0);
-
-                    LOG.info("Updating profile");
-
-                    actorCatalogDao.update(actorsCatalogToUpdate);
-                }
-
-                //Respond the request
-                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
             } else {
 
-                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.FAIL, "An actor with that public key does not exist.");
+                /*
+                 * Respond whit fail message
+                 */
+                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.FAIL, "An actor with that public key does not exist.");
             }
 
-            //Create instance
-            if (session.isOpen()) {
+            LOG.info("------------------ Processing finish ------------------");
 
-                return Package.createInstance(
-                        isActorOnlineMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
-                        PackageType.ACK                         ,
-                        channel.getChannelIdentity().getPrivateKey(),
-                        destinationIdentityPublicKey
-                );
-
-            } else {
-                throw new IOException("connection is not opened.");
-            }
+            return Package.createInstance(
+                    updateMsgRespond.toJson(),
+                    packageReceived.getNetworkServiceTypeSource(),
+                    PackageType.ACK,
+                    channel.getChannelIdentity().getPrivateKey(),
+                    destinationIdentityPublicKey
+            );
 
         } catch(Exception exception){
+
             try {
-                exception.printStackTrace();
+
                 LOG.error(exception.getMessage());
+
                 /*
                  * Respond whit fail message
                  */
                 ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), IsActorOnlineMsgRespond.STATUS.FAIL, exception.getLocalizedMessage());
 
+                LOG.info("------------------ Processing finish ------------------");
+
                 return Package.createInstance(
-                        actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
-                        PackageType.ACK                         ,
+                        actorListMsgRespond.toJson(),
+                        packageReceived.getNetworkServiceTypeSource(),
+                        PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
@@ -166,6 +136,8 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 return null;
             }
         }
+
+
     }
 
     private IoPNodePluginRoot pluginRoot;
@@ -177,4 +149,5 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
         return pluginRoot;
     }
+
 }
