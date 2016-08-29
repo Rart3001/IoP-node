@@ -47,8 +47,12 @@ public class PackageDecoder implements Decoder.Binary<Package>{
 
     @Override
     public Package decode(ByteBuffer bytes) throws DecodeException {
+<<<<<<< HEAD
 
         LOG.debug("Decoding package, size: "+bytes.limit());
+=======
+        LOG.info("Decoding package, size: "+bytes.position());
+>>>>>>> ec1a41cd3ae57895a9b7e924b97f6bebf807d624
         com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package pack = com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package.getRootAsPackage(bytes);
 
         try {
