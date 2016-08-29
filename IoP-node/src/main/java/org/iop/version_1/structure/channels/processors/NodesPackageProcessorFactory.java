@@ -22,8 +22,10 @@ public class NodesPackageProcessorFactory {
 
 
     private static final NodesPackageProcessorFactory instance = new NodesPackageProcessorFactory();
+
     private Map<String,PackageProcessor> packageProcessors;
 
+//    private Map<String,Pac>
 
     private NodesPackageProcessorFactory() {
         packageProcessors = new HashMap<>();
@@ -38,7 +40,7 @@ public class NodesPackageProcessorFactory {
         packageProcessors.put(PackageType.EVENT_UNSUBSCRIBER.name(),new UnSubscribeRequestProcessor());
     }
 
-    public Map<String,PackageProcessor> getClientPackageProcessorsByPackageType() {
+    public Map<String,PackageProcessor> getClientPackageProcessors() {
         return packageProcessors;
     }
 

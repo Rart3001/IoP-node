@@ -133,7 +133,6 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         isActorOnlineMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
                         PackageType.ACK                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
@@ -154,7 +153,6 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
                         PackageType.ACK                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

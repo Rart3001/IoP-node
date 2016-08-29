@@ -2,7 +2,6 @@ package org.iop.version_1.structure.channels.endpoinsts;
 
 import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair;
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.BytePackage;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.exception.PackageTypeNotSupportedException;
@@ -112,42 +111,17 @@ public abstract class FermatWebSocketChannelEndpoint {
         }
     }
 
-    public void sendPackage(Session session, UUID packageId, String packageContent, NetworkServiceType networkServiceType, PackageType packageType, String destinationIdentityPublicKey) throws IOException, EncodeException, IllegalArgumentException {
+    public void sendPackage(Session session, UUID packageId, String packageContent, PackageType packageType, String destinationIdentityPublicKey) throws IOException, EncodeException, IllegalArgumentException {
         if (session==null) throw new IllegalArgumentException("Session can't be null");
         if (session.isOpen()) {
             Package packageRespond = Package.createInstance(
                     packageId,
                     packageContent                      ,
-                    networkServiceType                  ,
                     packageType                         ,
                     getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
             );
 
-            session.getBasicRemote().sendObject(packageRespond);
-        } else {
-            throw new IOException("connection is not opened.");
-        }
-    }
-
-
-
-    public synchronized final void sendPackage(final Session            session           ,
-                                               final byte[]             packageContent    ,
-                                               final NetworkServiceType networkServiceType,
-                                               final PackageType        packageType       ,
-                                               final String             identityPublicKey ) throws EncodeException, IOException {
-
-        if (session.isOpen()) {
-
-            BytePackage packageRespond = BytePackage.createInstance(
-                    packageContent                      ,
-                    networkServiceType                  ,
-                    packageType                         ,
-                    getChannelIdentity().getPrivateKey(),
-                    identityPublicKey
-            );
-            //todo: improve this, binario
             session.getBasicRemote().sendObject(packageRespond);
         } else {
             throw new IOException("connection is not opened.");

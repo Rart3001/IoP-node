@@ -3,9 +3,7 @@ package org.iop.version_1.structure.channels.endpoinsts.clients;
 import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair;
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.EventPublishRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ServerHandshakeRespond;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.events_op_codes.EventOp;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
@@ -17,16 +15,13 @@ import org.iop.version_1.structure.channels.processors.NodesPackageProcessorFact
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.SessionManager;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
-import org.iop.version_1.structure.database.jpa.entities.EventListener;
 import org.iop.version_1.structure.util.PackageDecoder;
 import org.iop.version_1.structure.util.PackageEncoder;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * The Class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.endpoinsts.clients.FermatWebSocketClientChannelServerEndpoint</code> this
@@ -64,7 +59,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
      */
     @Override
     protected Map<String,PackageProcessor> getPackageProcessors(){
-        return NodesPackageProcessorFactory.getInstance().getClientPackageProcessorsByPackageType();
+        return NodesPackageProcessorFactory.getInstance().getClientPackageProcessors();
     }
     /**
      *  Method called to handle a new connection
@@ -112,7 +107,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
              * the only respond with packageId null is this one
              */
             ServerHandshakeRespond serverHandshakeRespond = new ServerHandshakeRespond(null,ServerHandshakeRespond.STATUS.SUCCESS, ServerHandshakeRespond.STATUS.SUCCESS.toString(), cpki);
-            Package packageRespond = Package.createInstance(serverHandshakeRespond.toJson(), NetworkServiceType.UNDEFINED, PackageType.SERVER_HANDSHAKE_RESPONSE, getChannelIdentity().getPrivateKey(), cpki);
+            Package packageRespond = Package.createInstance(serverHandshakeRespond.toJson(), PackageType.SERVER_HANDSHAKE_RESPONSE, getChannelIdentity().getPrivateKey(), cpki);
 
             /*
              * Send the respond

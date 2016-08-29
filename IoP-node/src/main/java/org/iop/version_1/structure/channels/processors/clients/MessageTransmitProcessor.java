@@ -74,17 +74,18 @@ public class MessageTransmitProcessor extends PackageProcessor {
                     // wait for completion max 2 seconds
                     futureResult.get(2, TimeUnit.SECONDS);
 
-                    ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
-                    channel.sendPackage(session,packageReceived.getPackageId(), messageTransmitRespond.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACK, destinationIdentityPublicKey);
+                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
+                    channel.sendPackage(session,packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                     LOG.info("Message transmit successfully");
 
                 }catch (TimeoutException | ExecutionException | InterruptedException e){
 
                     LOG.error("Message cannot be transmitted");
+                    LOG.error("Package trasmitted fail: "+packageReceived.toString());
                     LOG.error(e);
 
                     ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: "+e.getMessage());
-                    channel.sendPackage(session,packageReceived.getPackageId(), messageTransmitRespond.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACK, destinationIdentityPublicKey);
+                    channel.sendPackage(session,packageReceived.getPackageId(), messageTransmitRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                     LOG.info("Message cannot be transmitted");
 
                     if (e instanceof  TimeoutException){
@@ -115,7 +116,6 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         ackRespond.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
@@ -135,7 +135,6 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         ackRespond.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

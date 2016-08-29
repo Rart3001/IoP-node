@@ -81,7 +81,6 @@ public class ActorListRequestProcessor extends PackageProcessor {
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
                         PackageType.ACTOR_LIST_REQUEST                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
@@ -111,7 +110,6 @@ public class ActorListRequestProcessor extends PackageProcessor {
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
                         PackageType.ACTOR_LIST_REQUEST                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

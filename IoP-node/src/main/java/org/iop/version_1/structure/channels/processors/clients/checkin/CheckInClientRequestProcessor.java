@@ -88,7 +88,6 @@ public class CheckInClientRequestProcessor extends PackageProcessor {
 
             return Package.createInstance(
                     respondProfileCheckInMsj.toJson(),
-                    packageReceived.getNetworkServiceTypeSource(),
                     PackageType.CHECK_IN_CLIENT_RESPOND,
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
@@ -112,7 +111,6 @@ public class CheckInClientRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         respondProfileCheckInMsj.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.CHECK_IN_CLIENT_RESPOND,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
