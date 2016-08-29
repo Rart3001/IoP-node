@@ -60,59 +60,63 @@ public class MessageTransmitProcessor extends PackageProcessor {
             String actorSessionId = JPADaoFactory.getActorCatalogDao().findValueById(destinationIdentityPublicKey, String.class, "sessionId");
 
             LOG.info("ACTOR SESSION ID = "+actorSessionId);
-
-            Session clientDestination = SessionManager.get(actorSessionId);
-            LOG.info("CLIENT DESTINATION = "+(clientDestination != null ? clientDestination.getId() : null));
-
-            if (clientDestination != null) {
-
-                Future<Void> futureResult = null;
-
-                try{
-
-                    futureResult = clientDestination.getAsyncRemote().sendObject(packageReceived);
-                    // wait for completion max 2 seconds
-                    futureResult.get(2, TimeUnit.SECONDS);
-
-                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
-                    channel.sendPackage(session,packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
-                    LOG.info("Message transmit successfully");
-
-                }catch (TimeoutException | ExecutionException | InterruptedException e){
-
-                    LOG.error("Message cannot be transmitted");
-                    LOG.error("Package trasmitted fail: "+packageReceived.toString());
-                    LOG.error(e);
-
-                    ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: "+e.getMessage());
-                    channel.sendPackage(session,packageReceived.getPackageId(), messageTransmitRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
-                    LOG.info("Message cannot be transmitted");
-
-                    if (e instanceof  TimeoutException){
-
-                        if (futureResult != null){
-                            // cancel the message
-                            futureResult.cancel(true);
+            if (actorSessionId!=null) {
+                Session clientDestination = SessionManager.get(actorSessionId);
+                LOG.info("CLIENT DESTINATION = " + (clientDestination != null ? clientDestination.getId() : null));
+                if (clientDestination != null) {
+                    Future<Void> futureResult = null;
+                    try {
+                        futureResult = clientDestination.getAsyncRemote().sendObject(packageReceived);
+                        // wait for completion max 2 seconds
+                        futureResult.get(2, TimeUnit.SECONDS);
+                        ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
+                        channel.sendPackage(session, packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
+                        LOG.info("Message transmit successfully");
+                    } catch (TimeoutException | ExecutionException | InterruptedException e) {
+                        LOG.error("Message cannot be transmitted");
+                        LOG.error("Package trasmitted fail: " + packageReceived.toString());
+                        LOG.error(e);
+                        ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: " + e.getMessage());
+                        channel.sendPackage(session, packageReceived.getPackageId(), messageTransmitRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
+                        LOG.info("Message cannot be transmitted");
+                        if (e instanceof TimeoutException) {
+                            if (futureResult != null) {
+                                // cancel the message
+                                futureResult.cancel(true);
+                            }
                         }
                     }
-
-                }
-
-            } else {
+                } else {
 
                 /*
                  * Remove old session
                  */
-                if ((actorSessionId != null && !actorSessionId.isEmpty()) && clientDestination == null){
-                    JPADaoFactory.getActorCatalogDao().setSessionToNull(destinationIdentityPublicKey);
-                }
+                    if ((actorSessionId != null && !actorSessionId.isEmpty())) {
+                        JPADaoFactory.getActorCatalogDao().setSessionToNull(destinationIdentityPublicKey);
+                    }
 
                 /*
                  * Notify to de sender the message can not transmit
                  */
-                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.FAIL, "The destination is not more available");
+                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "The destination is not more available");
 
-                LOG.info("The destination is not more available, Message not transmitted");
+                    LOG.info("The destination is not more available,destination session null. Message not transmitted");
+                    return Package.createInstance(
+                            packageReceived.getPackageId(),
+                            ackRespond.toJson(),
+                            PackageType.ACK,
+                            channel.getChannelIdentity().getPrivateKey(),
+                            destinationIdentityPublicKey
+                    );
+
+                }
+            }else {
+                /*
+                 * Notify to de sender the message can not transmit
+                 */
+                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "The destination is not more available");
+
+                LOG.info("The destination is not more available, actorSession null. Message not transmitted.");
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         ackRespond.toJson(),
@@ -120,8 +124,8 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-
             }
+
 
             LOG.info("------------------ Processing finish ------------------");
 
