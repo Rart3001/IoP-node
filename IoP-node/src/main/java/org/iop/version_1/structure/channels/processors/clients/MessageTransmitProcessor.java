@@ -72,7 +72,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
 
                     futureResult = sessionDestination.getAsyncRemote().sendObject(packageReceived);
                     // wait for completion max 6 seconds
-                    futureResult.get(6, TimeUnit.SECONDS);
+                    futureResult.get(10, TimeUnit.SECONDS);
 
                     messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
                     LOG.info("Message transmit successfully");
@@ -80,6 +80,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 }catch (TimeoutException | ExecutionException | InterruptedException e){
 
                     LOG.error("Message cannot be transmitted: ", e);
+                    LOG.error("packageReceived  = " + packageReceived);
 
                     if (e instanceof  TimeoutException){
 
