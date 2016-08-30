@@ -157,9 +157,12 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
                                 continue;
 
                             } else {
-
-                                //Create the new condition for each attribute we get
-                                filter = criteriaBuilder.equal(entities.get(attributeName), filters.get(attributeName));
+                                if (attributeName.equals("name") || attributeName.equals("alias")) {
+                                    filter = criteriaBuilder.like(entities.get(attributeName), "%"+filters.get(attributeName).toString()+"%");
+                                } else{
+                                    //Create the new condition for each attribute we get
+                                    filter = criteriaBuilder.equal(entities.get(attributeName), filters.get(attributeName));
+                                }
 
                             }
 

@@ -49,6 +49,8 @@ public class IoPNodePluginRoot extends AbstractPlugin implements NetworkNodeMana
      */
     private static final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(IoPNodePluginRoot.class));
 
+    private static final Logger LOG_REPORT = Logger.getLogger("reportsLoggers");
+
     @NeededAddonReference(platform = Platforms.OPERATIVE_SYSTEM_API, layer = Layers.SYSTEM, addon = Addons.DEVICE_LOCATION)
     private LocationManager locationManager;
 
@@ -83,6 +85,7 @@ public class IoPNodePluginRoot extends AbstractPlugin implements NetworkNodeMana
         LOG.info("Calling method - start()...");
         LOG.info("pluginId = " + pluginId);
 
+        LOG_REPORT.info("holassss");
         /*
          * Validate required resources
          */
