@@ -95,9 +95,8 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
 
             LOG.info("------------------ Processing finish ------------------");
             return Package.createInstance(
-                    respondProfileCheckInMsj.toJson(),
-                    packageReceived.getNetworkServiceTypeSource(),
-                    PackageType.CHECK_IN_ACTOR_RESPONSE,
+                    respondProfileCheckInMsj.toJson()                      ,
+                    PackageType.CHECK_IN_ACTOR_RESPONSE                         ,
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
             );
@@ -115,9 +114,8 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
 
                 LOG.info("------------------ Processing finish ------------------");
                 return Package.createInstance(
-                        respondProfileCheckInMsj.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
-                        PackageType.CHECK_IN_ACTOR_RESPONSE,
+                        respondProfileCheckInMsj.toJson()                      ,
+                        PackageType.CHECK_IN_ACTOR_RESPONSE                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );

@@ -118,7 +118,6 @@ public class MessageTransmitProcessor extends PackageProcessor {
             return Package.createInstance(
                     packageReceived.getPackageId(),
                     messageTransmitRespond.toJson(),
-                    packageReceived.getNetworkServiceTypeSource(),
                     PackageType.ACK,
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
@@ -136,7 +135,6 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         messageTransmitRespond.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

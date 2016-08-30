@@ -2,6 +2,7 @@ package org.iop.version_1.structure.channels.processors.clients;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.IsActorOnlineMsgRequest;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.IsActorOnlineMsgRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileStatus;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
@@ -81,18 +82,15 @@ public class IsActorOnlineRequestProcessor extends PackageProcessor {
             }
 
             //Respond the request
-            IsActorOnlineMsgRespond isActorOnlineMsgRespond = new IsActorOnlineMsgRespond(packageReceived.getPackageId(),
-                                                                                          IsActorOnlineMsgRespond.STATUS.SUCCESS,
-                                                                                          IsActorOnlineMsgRespond.STATUS.SUCCESS.toString(),
-                                                                                          actorProfilePublicKey, profileStatus,
-                                                                                          packageReceived.getNetworkServiceTypeSource().getCode());
+            ACKRespond isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(),
+                                                                ACKRespond.STATUS.SUCCESS,
+                                                                ACKRespond.STATUS.SUCCESS.toString());
 
             //Create instance
             if (session.isOpen()) {
 
                 return Package.createInstance(
                         isActorOnlineMsgRespond.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.IS_ACTOR_ONLINE,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
@@ -109,18 +107,13 @@ public class IsActorOnlineRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                IsActorOnlineMsgRespond actorListMsgRespond = new IsActorOnlineMsgRespond(
+                ACKRespond actorListMsgRespond = new ACKRespond(
                         packageReceived.getPackageId(),
                         IsActorOnlineMsgRespond.STATUS.FAIL,
-                        exception.getLocalizedMessage(),
-                        null,
-                        null,
-                        (packageReceived == null ? null : packageReceived.getNetworkServiceTypeSource().toString())
-                );
+                        exception.getLocalizedMessage());
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson()                      ,
-                        packageReceived.getNetworkServiceTypeSource()                  ,
                         PackageType.IS_ACTOR_ONLINE                         ,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

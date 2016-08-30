@@ -127,7 +127,6 @@ public abstract class FermatWebSocketChannelEndpoint {
             Package packageRespond = Package.createInstance(
                     packageId,
                     packageContent                      ,
-                    networkServiceType                  ,
                     packageType                         ,
                     getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey

@@ -103,7 +103,6 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
             return Package.createInstance(
                     updateMsgRespond.toJson(),
-                    packageReceived.getNetworkServiceTypeSource(),
                     PackageType.ACK,
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
@@ -124,7 +123,6 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson(),
-                        packageReceived.getNetworkServiceTypeSource(),
                         PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey

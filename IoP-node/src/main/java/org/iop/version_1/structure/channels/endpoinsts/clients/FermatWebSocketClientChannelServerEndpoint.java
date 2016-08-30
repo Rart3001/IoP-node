@@ -107,7 +107,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
              * the only respond with packageId null is this one
              */
             ServerHandshakeRespond serverHandshakeRespond = new ServerHandshakeRespond(null,ServerHandshakeRespond.STATUS.SUCCESS, ServerHandshakeRespond.STATUS.SUCCESS.toString(), cpki);
-            Package packageRespond = Package.createInstance(serverHandshakeRespond.toJson(), NetworkServiceType.UNDEFINED, PackageType.SERVER_HANDSHAKE_RESPONSE, getChannelIdentity().getPrivateKey(), cpki);
+            Package packageRespond = Package.createInstance(serverHandshakeRespond.toJson(), PackageType.SERVER_HANDSHAKE_RESPONSE, getChannelIdentity().getPrivateKey(), cpki);
 
             /*
              * Send the respond
