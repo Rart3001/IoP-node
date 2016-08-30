@@ -12,6 +12,7 @@ import org.iop.version_1.structure.database.jpa.entities.NetworkService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**
@@ -100,6 +101,25 @@ public class NetworkServiceDao extends AbstractBaseDao<NetworkService> {
             throw new CantDeleteRecordDataBaseException(CantDeleteRecordDataBaseException.DEFAULT_MESSAGE, e, "Network Node", "");
         } finally {
             connection.close();
+        }
+
+    }
+
+    /**
+     * This method only append transaction to an open connection
+     *
+     * @param connection
+     * @param sessionId
+     * @throws CantDeleteRecordDataBaseException
+     */
+    public void chaincheckOut(EntityManager connection,String sessionId) throws CantDeleteRecordDataBaseException {
+        try {
+            Query deleteQuery = connection.createQuery("DELETE FROM NetworkService c WHERE c.sessionId = :id");
+            deleteQuery.setParameter("id", sessionId);
+            int result = deleteQuery.executeUpdate();
+            LOG.info("Deleted ns = "+result);
+        } catch (Exception e) {
+            LOG.error(e);
         }
 
     }

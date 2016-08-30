@@ -108,6 +108,9 @@ public class NetworkService extends AbstractBaseEntity<String>{
         }
     }
 
+    public NetworkService() {
+    }
+
     /**
      * Get the value of id
      *

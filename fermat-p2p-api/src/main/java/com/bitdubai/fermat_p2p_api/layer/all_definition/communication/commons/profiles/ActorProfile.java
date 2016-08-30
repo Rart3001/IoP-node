@@ -41,18 +41,6 @@ public class ActorProfile extends Profile {
     private byte[] photo;
 
     /**
-     * Represent the nsIdentityPublicKey
-     * //todo: sacar
-     */
-    private String nsIdentityPublicKey;
-
-    /**
-     * Represent the clientIdentityPublicKey
-     * //todo: sacar
-     */
-    private String clientIdentityPublicKey;
-
-    /**
      * Home node identifier
      */
     private String homeNodeIdentifier;
@@ -154,42 +142,6 @@ public class ActorProfile extends Profile {
         this.photo = photo;
     }
 
-    /**
-     * Gets the value of nsIdentityPublicKey and returns
-     *
-     * @return nsIdentityPublicKey
-     */
-    public String getNsIdentityPublicKey() {
-        return nsIdentityPublicKey;
-    }
-
-    /**
-     * Sets the nsIdentityPublicKey
-     *
-     * @param nsIdentityPublicKey to set
-     */
-    public void setNsIdentityPublicKey(String nsIdentityPublicKey) {
-        this.nsIdentityPublicKey = nsIdentityPublicKey;
-    }
-
-    /**
-     * Get the ClientIdentityPublicKey
-     *
-     * @return String
-     */
-    public String getClientIdentityPublicKey() {
-        return clientIdentityPublicKey;
-    }
-
-    /**
-     * Sets the clientIdentityPublicKey
-     *
-     * @param clientIdentityPublicKey to set
-     */
-    public void setClientIdentityPublicKey(String clientIdentityPublicKey) {
-        this.clientIdentityPublicKey = clientIdentityPublicKey;
-    }
-
     public String getHomeNodePublicKey() {
         return homeNodeIdentifier;
     }
@@ -226,12 +178,6 @@ public class ActorProfile extends Profile {
         if (jsonObject.get("exd") != null)
             actorProfile.setExtraData(jsonObject.get("exd").getAsString());
 
-        if (jsonObject.get("nspk") != null)
-        actorProfile.setNsIdentityPublicKey(jsonObject.get("nspk").getAsString());
-
-        if (jsonObject.get("clpk") != null)
-            actorProfile.setClientIdentityPublicKey(jsonObject.get("clpk").getAsString());
-
         if (jsonObject.get("photo") != null)
             actorProfile.setPhoto(Base64.decode(jsonObject.get("photo").getAsString(), Base64.DEFAULT));
 
@@ -259,12 +205,6 @@ public class ActorProfile extends Profile {
 
         if (extraData != null)
             jsonObject.addProperty("exd", extraData);
-
-        if (nsIdentityPublicKey != null)
-            jsonObject.addProperty("nspk", nsIdentityPublicKey);
-
-        if (clientIdentityPublicKey != null)
-            jsonObject.addProperty("clpk", clientIdentityPublicKey);
 
         if (photo != null)
             jsonObject.addProperty("photo", Base64.encodeToString(photo, Base64.DEFAULT));
@@ -304,8 +244,6 @@ public class ActorProfile extends Profile {
                 ", extraData='" + extraData + '\'' +
                 ", name='" + name + '\'' +
                 ", photo=" + (photo != null ? "true" : "false") +
-                ", nsIdentityPublicKey ='" + nsIdentityPublicKey + '\'' +
-                ", clientIdentityPublicKey ='" + clientIdentityPublicKey + '\'' +
                 ", status ='"+getStatus() + '\'' +
                 '}';
     }

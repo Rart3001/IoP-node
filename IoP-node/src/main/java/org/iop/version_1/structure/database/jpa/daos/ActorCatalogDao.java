@@ -405,10 +405,6 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
         EntityTransaction transaction = connection.getTransaction();
 
         try {
-
-            if(entity.getClientIdentityPublicKey()==null){
-                entity.setClientIdentityPublicKey(UUID.randomUUID().toString());
-            }
             transaction.begin();
             connection.persist(entity);
             connection.flush();
@@ -621,5 +617,17 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
         return list;
     }
 
+    /**
+     *  This method only append a transaction to an active connection
+     *
+     * @param connection
+     * @param sessionId
+     */
+    public void chaincheckOut(EntityManager connection, String sessionId) {
+        Query deleteQuery = connection.createQuery("UPDATE ActorCatalog a SET a.sessionId = null WHERE a.sessionId = :id");
+        deleteQuery.setParameter("id", sessionId);
+        int result = deleteQuery.executeUpdate();
 
+        LOG.info("Actor chain checkout Update rows = "+result+"");
+    }
 }

@@ -138,7 +138,6 @@ public abstract class AbstractActorNetworkService extends AbstractNetworkService
                 exception.printStackTrace();
             }
         }
-        actorToRegister.setNsIdentityPublicKey(this.getPublicKey());
         actorToRegister.setExtraData(extraData);
 
         System.out.println("******************* REGISTERING ACTOR: " + name + " - type: " + type + "  LOCATION AND DATA SET");

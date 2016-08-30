@@ -165,7 +165,7 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
     /**
      * Represents the client identity public key.
      */
-    private String clientIdentityPublicKey;
+//    private String clientIdentityPublicKey;
 
     /**
      * Constructor with parameters
@@ -189,11 +189,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
         this.homeNode = new NodeCatalog(homeNodePublicKey);
         this.sessionId = null;
         this.signature = signature;
-        this.clientIdentityPublicKey = actorProfile.getClientIdentityPublicKey();
-        if(clientIdentityPublicKey==null){
-            this.clientIdentityPublicKey= UUID.randomUUID().toString();
-        }
-
         if (actorProfile.getLocation() != null){
             this.location = new GeoLocation(this.id, actorProfile.getLocation().getLatitude(), actorProfile.getLocation().getLongitude());
         }else {
@@ -541,13 +536,6 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
 
     }
 
-    public String getClientIdentityPublicKey() {
-        return clientIdentityPublicKey;
-    }
-
-    public void setClientIdentityPublicKey(String clientIdentityPublicKey) {
-        this.clientIdentityPublicKey = clientIdentityPublicKey;
-    }
 
     /**
      * (non-javadoc)

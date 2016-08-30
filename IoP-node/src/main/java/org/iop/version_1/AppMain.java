@@ -59,6 +59,7 @@ public class AppMain {
             },0,30, TimeUnit.SECONDS);
 
 
+
             DeviceLocationSystemAddonRoot deviceLocationSystemAddonRoot = new DeviceLocationSystemAddonRoot();
             deviceLocationSystemAddonRoot.start();
 //

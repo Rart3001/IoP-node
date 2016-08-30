@@ -80,10 +80,8 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         channel.sendPackage(session, packageReceived.getPackageId(), messageTransmitRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                         LOG.info("Message cannot be transmitted");
                         if (e instanceof TimeoutException) {
-                            if (futureResult != null) {
-                                // cancel the message
-                                futureResult.cancel(true);
-                            }
+                            // cancel the message
+                            futureResult.cancel(true);
                         }
                     }
                 } else {
