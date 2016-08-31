@@ -67,8 +67,8 @@ public class MessageTransmitProcessor extends PackageProcessor {
                     Future<Void> futureResult = null;
                     try {
                         futureResult = clientDestination.getAsyncRemote().sendObject(packageReceived);
-                        // wait for completion max 2 seconds
-                        futureResult.get(2, TimeUnit.SECONDS);
+                        // wait for completion max 4 seconds
+                        futureResult.get(4, TimeUnit.SECONDS);
                         LOG.info("Message transmit successfully");
                         ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
                         return Package.createInstance(

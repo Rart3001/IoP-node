@@ -240,7 +240,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
         try {
 
             if (throwable instanceof MessageTooLargeException){
-                LOG.warn("No voy a cerrar el canal acá...");
+                LOG.error("No voy a cerrar el canal acá...",throwable);
             }else {
 
                 if (session.isOpen()) {
