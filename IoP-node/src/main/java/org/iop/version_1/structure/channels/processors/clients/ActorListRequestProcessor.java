@@ -75,6 +75,7 @@ public class ActorListRequestProcessor extends PackageProcessor {
 
             if (session.isOpen()) {
 
+                LOG.info("Responding actor list, size:  " + actorsList.size());
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         actorListMsgRespond.toJson()                      ,
@@ -82,6 +83,7 @@ public class ActorListRequestProcessor extends PackageProcessor {
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
+
 
             } else {
                 throw new IOException("connection is not opened.");
