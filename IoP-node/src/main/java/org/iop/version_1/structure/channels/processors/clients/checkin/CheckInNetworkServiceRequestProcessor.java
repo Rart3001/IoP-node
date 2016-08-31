@@ -29,7 +29,7 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(CheckInNetworkServiceRequestProcessor.class));
+    private static final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor

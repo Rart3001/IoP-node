@@ -69,27 +69,40 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         futureResult = clientDestination.getAsyncRemote().sendObject(packageReceived);
                         // wait for completion max 2 seconds
                         futureResult.get(2, TimeUnit.SECONDS);
-                        ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
-                        channel.sendPackage(session, packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                         LOG.info("Message transmit successfully");
+                        ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
+                        return Package.createInstance(
+                                packageReceived.getPackageId(),
+                                ackRespond.toJson()                      ,
+                                PackageType.ACK                         ,
+                                channel.getChannelIdentity().getPrivateKey(),
+                                destinationIdentityPublicKey
+                                );
+//                        channel.sendPackage(session, packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                     } catch (TimeoutException | ExecutionException | InterruptedException e) {
                         LOG.error("Message cannot be transmitted");
                         LOG.error("Package trasmitted fail: " + packageReceived.toString());
                         LOG.error(e);
                         ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: " + e.getMessage());
-                        channel.sendPackage(session, packageReceived.getPackageId(), messageTransmitRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                         LOG.info("Message cannot be transmitted");
                         if (e instanceof TimeoutException) {
                             // cancel the message
                             futureResult.cancel(true);
                         }
+                        return Package.createInstance(
+                                packageReceived.getPackageId(),
+                                messageTransmitRespond.toJson()                      ,
+                                PackageType.ACK                         ,
+                                channel.getChannelIdentity().getPrivateKey(),
+                                destinationIdentityPublicKey
+                        );
                     }
                 } else {
 
                 /*
                  * Remove old session
                  */
-                    if ((actorSessionId != null && !actorSessionId.isEmpty())) {
+                    if (!actorSessionId.isEmpty()) {
                         JPADaoFactory.getActorCatalogDao().setSessionToNull(destinationIdentityPublicKey);
                     }
 
@@ -125,7 +138,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
             }
 
 
-            LOG.info("------------------ Processing finish ------------------");
+//            LOG.info("------------------ Processing finish ------------------");
 
         } catch (Exception exception){
 
