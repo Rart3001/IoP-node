@@ -560,6 +560,7 @@ public class ActorCatalog extends AbstractBaseEntity<String>{
 
     }
 
+
     /**
      * (non-javadoc)
      * @see AbstractBaseEntity@hashCode()

@@ -64,8 +64,7 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             CriteriaBuilder criteriaBuilder = connection.getCriteriaBuilder();
             CriteriaQuery<ActorCatalog> criteriaQuery = criteriaBuilder.createQuery(entityClass);
             Root<ActorCatalog> entities = criteriaQuery.from(entityClass);
-            criteriaQuery.multiselect(entities);
-
+            criteriaQuery.select(entities);
             BasicGeoRectangle basicGeoRectangle = new BasicGeoRectangle();
             Map<String, Object> filters = buildFilterGroupFromDiscoveryQueryParameters(discoveryQueryParameters);
 
@@ -191,8 +190,6 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
             return query.getResultList();
 
         } catch (Exception e){
-
-            e.printStackTrace();
 
             throw new CantReadRecordDataBaseException(
                     e,
@@ -615,5 +612,17 @@ public class ActorCatalogDao extends AbstractBaseDao<ActorCatalog> {
         return list;
     }
 
+    /**
+     *  This method only append a transaction to an active connection
+     *
+     * @param connection
+     * @param sessionId
+     */
+    public void chaincheckOut(EntityManager connection, String sessionId) {
+        Query deleteQuery = connection.createQuery("UPDATE ActorCatalog a SET a.sessionId = null WHERE a.sessionId = :id");
+        deleteQuery.setParameter("id", sessionId);
+        int result = deleteQuery.executeUpdate();
 
+        LOG.info("Actor chain checkout Update rows = "+result+"");
+    }
 }

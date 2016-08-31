@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.api.MessageTooLargeException;
 import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEndpoint;
 import org.iop.version_1.structure.channels.endpoinsts.clients.conf.ClientChannelConfigurator;
+import org.iop.version_1.structure.channels.endpoinsts.clients.helpers.DatabaseHelper;
 import org.iop.version_1.structure.channels.processors.NodesPackageProcessorFactory;
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.SessionManager;
@@ -167,7 +168,12 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
             LOG.info(" Open sessions: " + session.getOpenSessions().size());
             LOG.info("Removing session and associate entities");
             SessionManager.remove(session);
-            JPADaoFactory.getClientDao().checkOut(session.getId());
+
+            /**
+             * Checkout session
+             */
+            DatabaseHelper.checkoutSession(session);
+
             //Este checkout deberia ser más controlado
 //            List<String> listActorsCheckingOut = JPADaoFactory.getActorCatalogDao().checkOutAndGet(session.getId());
 

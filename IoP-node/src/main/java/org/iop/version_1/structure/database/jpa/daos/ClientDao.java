@@ -131,6 +131,8 @@ public class ClientDao extends AbstractBaseDao<Client>{
 
             LOG.info("Deleted ns = "+result);
 
+
+
             transaction.commit();
             connection.flush();
 
@@ -141,6 +143,38 @@ public class ClientDao extends AbstractBaseDao<Client>{
             }
         } finally {
             connection.close();
+        }
+
+    }
+
+    /**
+     * This method only append transaction to an open connection
+     *
+     * @param connection
+     * @param sessionId
+     * @throws CantDeleteRecordDataBaseException
+     */
+    public void chaincheckOut(EntityManager connection,String sessionId) throws CantDeleteRecordDataBaseException {
+
+        try {
+
+            TypedQuery<Client> query = connection.createQuery("SELECT c FROM Client c WHERE c.sessionId = :id", Client.class);
+            query.setParameter("id", sessionId);
+            Client client = query.getSingleResult();
+
+            connection.remove(connection.contains(client) ? client : connection.merge(client));
+
+            LOG.info("Deleted client = 1");
+
+            Query deleteQuery = connection.createQuery("DELETE FROM NetworkService c WHERE c.sessionId = :id");
+            deleteQuery.setParameter("id", sessionId);
+            int result = deleteQuery.executeUpdate();
+
+            LOG.info("Deleted ns = "+result);
+
+
+        } catch (Exception e) {
+            LOG.error(e);
         }
 
     }
