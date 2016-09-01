@@ -3,11 +3,9 @@ package org.iop.version_1.structure.util;
 import net.coobird.thumbnailator.Thumbnails;
 
 import javax.imageio.ImageIO;
-import javax.imageio.ImageReader;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.URLConnection;
-import java.util.Iterator;
 
 /**
  * The Class <code>com.bitdubai.fermat_api.layer.all_definition.util.ImageUtil</code> It provides some

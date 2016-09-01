@@ -1,7 +1,6 @@
 package org.iop.version_1.structure.util;
 
 
-import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.BlockPackages;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Block;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.Package;
@@ -13,7 +12,6 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 import java.nio.ByteBuffer;
-import java.util.UUID;
 
 /**
  * <p/>

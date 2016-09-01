@@ -12,7 +12,6 @@ import org.iop.version_1.structure.database.jpa.entities.NetworkService;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import java.util.List;
 
 /**

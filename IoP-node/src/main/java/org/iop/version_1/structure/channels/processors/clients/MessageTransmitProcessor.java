@@ -2,7 +2,6 @@ package org.iop.version_1.structure.channels.processors.clients;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.MsgRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
@@ -76,7 +75,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
                     // wait for completion max 6 seconds
                     futureResult.get(6, TimeUnit.SECONDS);
 
-                    messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
+                    messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
                     LOG.info("Message transmit successfully");
 
                     /**
@@ -109,7 +108,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         );
                     }
 
-                    messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: "+e.getMessage());
+                    messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "Can't send message to destination, error details: "+e.getMessage());
 
                 }
 
@@ -126,7 +125,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 /*
                  * Notify to de sender the message can not transmit
                  */
-                messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.FAIL, "The destination is not more available");
+                messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "The destination is not more available");
 
                 /**
                  * Report Logger
@@ -159,7 +158,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
             try {
 
                 LOG.error(exception);
-                messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.FAIL, exception.getMessage());
+                messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, exception.getMessage());
 
                 LOG.info("------------------ Processing finish ------------------");
 

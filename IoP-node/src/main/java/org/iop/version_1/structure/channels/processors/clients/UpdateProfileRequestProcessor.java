@@ -3,7 +3,6 @@ package org.iop.version_1.structure.channels.processors.clients;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.UpdateActorProfileMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.IsActorOnlineMsgRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ActorProfile;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
@@ -18,9 +17,8 @@ import org.iop.version_1.structure.context.NodeContextItem;
 import org.iop.version_1.structure.database.jpa.daos.ActorCatalogDao;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
-import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
-import org.iop.version_1.structure.util.logger.ReportLogger;
 import org.iop.version_1.structure.util.ThumbnailUtil;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.io.IOException;
@@ -92,26 +90,24 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit success message
                  */
-                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
+                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
 
                 /**
                  * Report Logger
                  */
-                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
-
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(), STATUS.SUCCESS,packageReceived.toString());
 
             } else {
 
                 /**
                  * Report Logger
                  */
-                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"An actor with that public key does not exist."+packageReceived.toString());
-
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(), STATUS.FAIL,"An actor with that public key does not exist."+packageReceived.toString());
 
                 /*
                  * Respond whit fail message
                  */
-                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.FAIL, "An actor with that public key does not exist.");
+                updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "An actor with that public key does not exist.");
             }
 
             LOG.info("------------------ Processing finish ------------------");
@@ -132,7 +128,7 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, exception.getLocalizedMessage());
+                ACKRespond updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, exception.getLocalizedMessage());
 
                 LOG.info("------------------ Processing finish ------------------");
 
@@ -142,7 +138,7 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
-                        actorListMsgRespond.toJson(),
+                        updateMsgRespond.toJson(),
                         PackageType.ACK,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
