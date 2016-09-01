@@ -4,6 +4,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.da
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.IsActorOnlineMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.IsActorOnlineMsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileStatus;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
@@ -13,6 +14,7 @@ import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEnd
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.SessionManager;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.io.IOException;
@@ -83,11 +85,16 @@ public class IsActorOnlineRequestProcessor extends PackageProcessor {
 
             //Respond the request
             ACKRespond isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(),
-                                                                ACKRespond.STATUS.SUCCESS,
-                                                                ACKRespond.STATUS.SUCCESS.toString());
+                                                                STATUS.SUCCESS,
+                                                                STATUS.SUCCESS.toString());
 
             //Create instance
             if (session.isOpen()) {
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
 
                 return Package.createInstance(
                         isActorOnlineMsgRespond.toJson(),
@@ -109,8 +116,13 @@ public class IsActorOnlineRequestProcessor extends PackageProcessor {
                  */
                 ACKRespond actorListMsgRespond = new ACKRespond(
                         packageReceived.getPackageId(),
-                        IsActorOnlineMsgRespond.STATUS.FAIL,
+                        STATUS.FAIL,
                         exception.getLocalizedMessage());
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson()                      ,

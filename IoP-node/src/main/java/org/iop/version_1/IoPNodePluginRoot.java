@@ -84,8 +84,6 @@ public class IoPNodePluginRoot extends AbstractPlugin implements NetworkNodeMana
 
         LOG.info("Calling method - start()...");
         LOG.info("pluginId = " + pluginId);
-
-        resultLog.info("holassss");
         /*
          * Validate required resources
          */

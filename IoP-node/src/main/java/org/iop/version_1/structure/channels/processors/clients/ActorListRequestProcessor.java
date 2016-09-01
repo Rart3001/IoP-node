@@ -5,6 +5,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.da
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.ActorListMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ActorCallMsgRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ActorListMsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.enums.ProfileStatus;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantReadRecordDataBaseException;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ActorProfile;
@@ -19,6 +20,7 @@ import org.iop.version_1.structure.context.NodeContext;
 import org.iop.version_1.structure.context.NodeContextItem;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.io.IOException;
@@ -74,9 +76,14 @@ public class ActorListRequestProcessor extends PackageProcessor {
             /*
              * If all ok, respond whit success message
              */
-            ActorListMsgRespond actorListMsgRespond = new ActorListMsgRespond(packageReceived.getPackageId(),ActorCallMsgRespond.STATUS.SUCCESS, ActorCallMsgRespond.STATUS.SUCCESS.toString(), actorsList);
+            ActorListMsgRespond actorListMsgRespond = new ActorListMsgRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString(), actorsList);
 
             if (session.isOpen()) {
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
 
                 LOG.info("Responding actor list, size:  " + actorsList.size());
                 return Package.createInstance(
@@ -105,9 +112,14 @@ public class ActorListRequestProcessor extends PackageProcessor {
                  */
                 ActorListMsgRespond actorListMsgRespond = new ActorListMsgRespond(
                         packageReceived.getPackageId(),
-                        ActorListMsgRespond.STATUS.FAIL,
+                        STATUS.FAIL,
                         exception.getLocalizedMessage(),
                         null);
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
                         packageReceived.getPackageId(),
@@ -116,9 +128,6 @@ public class ActorListRequestProcessor extends PackageProcessor {
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-
-//                channel.sendPackage(session, actorListMsgRespond.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACTOR_LIST_REQUEST, destinationIdentityPublicKey);
-
             } catch (Exception e) {
                 e.printStackTrace();
                 LOG.error(e);

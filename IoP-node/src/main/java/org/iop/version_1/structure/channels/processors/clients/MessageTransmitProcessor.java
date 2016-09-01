@@ -2,7 +2,8 @@ package org.iop.version_1.structure.channels.processors.clients;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.MsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.MsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEnd
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.SessionManager;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.util.concurrent.ExecutionException;
@@ -70,7 +72,13 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         // wait for completion max 4 seconds
                         futureResult.get(4, TimeUnit.SECONDS);
                         LOG.info("Message transmit successfully");
-                        ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
+                        ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
+
+                        /**
+                         * Report Logger
+                         */
+                        ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
+
                         return Package.createInstance(
                                 packageReceived.getPackageId(),
                                 ackRespond.toJson()                      ,
@@ -78,17 +86,21 @@ public class MessageTransmitProcessor extends PackageProcessor {
                                 channel.getChannelIdentity().getPrivateKey(),
                                 destinationIdentityPublicKey
                                 );
-//                        channel.sendPackage(session, packageReceived.getPackageId(), ackRespond.toJson(), PackageType.ACK, destinationIdentityPublicKey);
                     } catch (TimeoutException | ExecutionException | InterruptedException e) {
                         LOG.error("Message cannot be transmitted");
                         LOG.error("Package trasmitted fail: " + packageReceived.toString());
                         LOG.error(e);
-                        ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: " + e.getMessage());
+                        ACKRespond messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "Can't send message to destination, error details: " + e.getMessage());
                         LOG.info("Message cannot be transmitted");
                         if (e instanceof TimeoutException) {
                             // cancel the message
                             futureResult.cancel(true);
                         }
+                        /**
+                         * Report Logger
+                         */
+                        ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),e);
+
                         return Package.createInstance(
                                 packageReceived.getPackageId(),
                                 messageTransmitRespond.toJson()                      ,
@@ -106,12 +118,18 @@ public class MessageTransmitProcessor extends PackageProcessor {
                         JPADaoFactory.getActorCatalogDao().setSessionToNull(destinationIdentityPublicKey);
                     }
 
-                /*
-                 * Notify to de sender the message can not transmit
-                 */
-                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "The destination is not more available");
+                    /*
+                     * Notify to de sender the message can not transmit
+                     */
+                    ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "The destination is not more available");
 
                     LOG.info("The destination is not more available,destination session null. Message not transmitted");
+
+                    /**
+                     * Report Logger
+                     */
+                    ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"The destination is not more available, "+packageReceived.toString());
+
                     return Package.createInstance(
                             packageReceived.getPackageId(),
                             ackRespond.toJson(),
@@ -125,9 +143,15 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 /*
                  * Notify to de sender the message can not transmit
                  */
-                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "The destination is not more available");
+                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "The destination is not more available");
 
                 LOG.info("The destination is not more available, actorSession null. Message not transmitted.");
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"The destination is not more available, "+packageReceived.toString());
+
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         ackRespond.toJson(),
@@ -146,7 +170,7 @@ public class MessageTransmitProcessor extends PackageProcessor {
                 exception.printStackTrace();
                 LOG.error(exception);
 
-                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.FAIL, exception.getMessage());
+                ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),STATUS.FAIL, exception.getMessage());
                 return Package.createInstance(
                         packageReceived.getPackageId(),
                         ackRespond.toJson(),

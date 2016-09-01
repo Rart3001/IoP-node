@@ -4,6 +4,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.da
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.UpdateActorProfileMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.IsActorOnlineMsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ActorProfile;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
@@ -18,6 +19,7 @@ import org.iop.version_1.structure.database.jpa.daos.ActorCatalogDao;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
 import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.io.IOException;
@@ -122,10 +124,18 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 }
 
                 //Respond the request
-                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
-            } else {
+                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
 
-                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.FAIL, "An actor with that public key does not exist.");
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
+            } else {
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"An actor with that public key does not exist."+packageReceived.toString());
+                isActorOnlineMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, "An actor with that public key does not exist.");
             }
 
             //Create instance
@@ -149,7 +159,12 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), IsActorOnlineMsgRespond.STATUS.FAIL, exception.getLocalizedMessage());
+                ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, exception.getLocalizedMessage());
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson()                      ,
