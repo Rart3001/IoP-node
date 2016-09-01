@@ -4,6 +4,7 @@ import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair
 import com.bitdubai.fermat_api.layer.all_definition.network_service.enums.NetworkServiceType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ServerHandshakeRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
@@ -18,6 +19,7 @@ import org.iop.version_1.structure.context.SessionManager;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.util.PackageDecoder;
 import org.iop.version_1.structure.util.PackageEncoder;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
@@ -107,7 +109,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
              * Construct packet SERVER_HANDSHAKE_RESPONSE
              * the only respond with packageId null is this one
              */
-            ServerHandshakeRespond serverHandshakeRespond = new ServerHandshakeRespond(null,ServerHandshakeRespond.STATUS.SUCCESS, ServerHandshakeRespond.STATUS.SUCCESS.toString(), cpki);
+            ServerHandshakeRespond serverHandshakeRespond = new ServerHandshakeRespond(null, STATUS.SUCCESS, STATUS.SUCCESS.toString(), cpki);
             Package packageRespond = Package.createInstance(serverHandshakeRespond.toJson(), PackageType.SERVER_HANDSHAKE_RESPONSE, getChannelIdentity().getPrivateKey(), cpki);
 
             /*
@@ -134,6 +136,10 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
     public Package newPackageReceived(Package packageReceived, Session session) {
 
         try {
+            /**
+             * report logger
+             */
+            ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.PROCESSING,packageReceived.toString());
 
             /*
              * Process the new package received
@@ -142,6 +148,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
 
         }catch (Exception p){
             LOG.warn("Session: "+session.getId(),p);
+            ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.EXCEPTION,packageReceived.toString(),p);
         }
         return null;
     }
@@ -240,7 +247,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
         try {
 
             if (throwable instanceof MessageTooLargeException){
-                LOG.warn("No voy a cerrar el canal acá...");
+                LOG.error("No voy a cerrar el canal acá...",throwable);
             }else {
 
                 if (session.isOpen()) {

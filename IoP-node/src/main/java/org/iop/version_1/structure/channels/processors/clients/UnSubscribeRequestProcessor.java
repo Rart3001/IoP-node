@@ -3,6 +3,7 @@ package org.iop.version_1.structure.channels.processors.clients;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.UnSubscribeMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
@@ -64,8 +65,8 @@ public class UnSubscribeRequestProcessor extends PackageProcessor {
 
             //Respond the request
             ACKRespond ackRespond = new ACKRespond(packageReceived.getPackageId(),
-                    ACKRespond.STATUS.SUCCESS,
-                    ACKRespond.STATUS.SUCCESS.toString());
+                    STATUS.SUCCESS,
+                    STATUS.SUCCESS.toString());
 
             //Create instance
             if (session.isOpen()) {
@@ -90,7 +91,7 @@ public class UnSubscribeRequestProcessor extends PackageProcessor {
                  */
                 ACKRespond ackRespond = new ACKRespond(
                         packageReceived.getPackageId(),
-                        ACKRespond.STATUS.FAIL,
+                        STATUS.FAIL,
                         exception.getLocalizedMessage()
                 );
 

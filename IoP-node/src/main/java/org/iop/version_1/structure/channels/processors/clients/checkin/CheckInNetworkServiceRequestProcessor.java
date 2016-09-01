@@ -3,6 +3,7 @@ package org.iop.version_1.structure.channels.processors.clients.checkin;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.CheckInProfileMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.NetworkServiceProfile;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
@@ -12,6 +13,7 @@ import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEnd
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.NetworkService;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 
@@ -29,7 +31,7 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(CheckInNetworkServiceRequestProcessor.class));
+    private static final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor
@@ -71,7 +73,9 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
             /*
              * If all ok, respond whit success message
              */
-            ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
+            ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
+
+            ReportLogger.infoProcessor(getClass(),PackageType.CHECK_IN_NETWORK_SERVICE_REQUEST,STATUS.SUCCESS,packageReceived.toString());
 
             return Package.createInstance(
                     respondProfileCheckInMsj.toJson(),
@@ -79,7 +83,6 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
                     channel.getChannelIdentity().getPrivateKey(),
                     destinationIdentityPublicKey
             );
-//            channel.sendPackage(session, respondProfileCheckInMsj.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACK, destinationIdentityPublicKey);
 
         } catch (Exception exception) {
 
@@ -90,7 +93,11 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.FAIL, exception.getMessage());
+                ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),STATUS.FAIL, exception.getMessage());
+                /**
+                 * Report looger
+                 */
+                ReportLogger.infoProcessor(getClass(),PackageType.CHECK_IN_NETWORK_SERVICE_REQUEST,STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
                         respondProfileCheckInMsj.toJson(),
@@ -98,7 +105,6 @@ public class CheckInNetworkServiceRequestProcessor extends PackageProcessor {
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
-//                channel.sendPackage(session, respondProfileCheckInMsj.toJson(), packageReceived.getNetworkServiceTypeSource(), PackageType.ACK, destinationIdentityPublicKey);
 
             } catch (Exception e) {
                 e.printStackTrace();

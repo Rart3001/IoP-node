@@ -2,7 +2,8 @@ package org.iop.version_1.structure.channels.processors.clients;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
-import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.MsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.MsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
@@ -10,6 +11,7 @@ import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEnd
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
 import org.iop.version_1.structure.context.SessionManager;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.websocket.Session;
 import java.util.concurrent.ExecutionException;
@@ -72,10 +74,15 @@ public class MessageTransmitProcessor extends PackageProcessor {
 
                     futureResult = sessionDestination.getAsyncRemote().sendObject(packageReceived);
                     // wait for completion max 6 seconds
-                    futureResult.get(10, TimeUnit.SECONDS);
+                    futureResult.get(6, TimeUnit.SECONDS);
 
                     messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.SUCCESS, MsgRespond.STATUS.SUCCESS.toString());
                     LOG.info("Message transmit successfully");
+
+                    /**
+                     * Report Logger
+                     */
+                    ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
 
                 }catch (TimeoutException | ExecutionException | InterruptedException e){
 
@@ -88,6 +95,18 @@ public class MessageTransmitProcessor extends PackageProcessor {
                             // cancel the message
                             futureResult.cancel(true);
                         }
+                        /**
+                         * Report Logger
+                         */
+                        ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),e);
+
+                        return Package.createInstance(
+                                packageReceived.getPackageId(),
+                                messageTransmitRespond.toJson()                      ,
+                                PackageType.ACK                         ,
+                                channel.getChannelIdentity().getPrivateKey(),
+                                destinationIdentityPublicKey
+                        );
                     }
 
                     messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(), MsgRespond.STATUS.FAIL, "Can't send message to destination, error details: "+e.getMessage());
@@ -109,9 +128,21 @@ public class MessageTransmitProcessor extends PackageProcessor {
                  */
                 messageTransmitRespond = new ACKRespond(packageReceived.getPackageId(),MsgRespond.STATUS.FAIL, "The destination is not more available");
 
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"The destination is not more available, "+packageReceived.toString());
+
+
                 LOG.info("The destination is not more available, Message not transmitted");
 
             }
+
+            /**
+             * Report Logger
+             */
+            ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"The destination is not more available, "+packageReceived.toString());
+
 
             LOG.info("------------------ Processing finish ------------------");
 

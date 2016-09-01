@@ -4,6 +4,7 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.da
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.UpdateActorProfileMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.IsActorOnlineMsgRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.profiles.ActorProfile;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
@@ -17,6 +18,8 @@ import org.iop.version_1.structure.context.NodeContextItem;
 import org.iop.version_1.structure.database.jpa.daos.ActorCatalogDao;
 import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
+import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 import org.iop.version_1.structure.util.ThumbnailUtil;
 
 import javax.websocket.Session;
@@ -91,7 +94,19 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                  */
                 updateMsgRespond = new ACKRespond(packageReceived.getPackageId(), ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
 
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
+
+
             } else {
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,"An actor with that public key does not exist."+packageReceived.toString());
+
 
                 /*
                  * Respond whit fail message
@@ -117,9 +132,14 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), IsActorOnlineMsgRespond.STATUS.FAIL, exception.getLocalizedMessage());
+                ACKRespond actorListMsgRespond = new ACKRespond(packageReceived.getPackageId(), STATUS.FAIL, exception.getLocalizedMessage());
 
                 LOG.info("------------------ Processing finish ------------------");
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 return Package.createInstance(
                         actorListMsgRespond.toJson(),

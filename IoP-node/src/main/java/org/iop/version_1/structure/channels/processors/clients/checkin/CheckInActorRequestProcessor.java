@@ -3,6 +3,7 @@ package org.iop.version_1.structure.channels.processors.clients.checkin;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.request.CheckInProfileMsgRequest;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.ACKRespond;
+import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantInsertRecordDataBaseException;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantReadRecordDataBaseException;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantUpdateRecordDataBaseException;
@@ -21,6 +22,7 @@ import org.iop.version_1.structure.database.jpa.daos.JPADaoFactory;
 import org.iop.version_1.structure.database.jpa.entities.ActorCatalog;
 import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
 import org.iop.version_1.structure.util.ThumbnailUtil;
+import org.iop.version_1.structure.util.logger.ReportLogger;
 
 import javax.imageio.IIOException;
 import javax.websocket.Session;
@@ -90,7 +92,13 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
             /*
              * If all ok, respond whit success message
              */
-            ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.SUCCESS, ACKRespond.STATUS.SUCCESS.toString());
+            ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(), STATUS.SUCCESS, STATUS.SUCCESS.toString());
+
+            /**
+             * Report Logger
+             */
+            ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
+
 
 
             LOG.info("------------------ Processing finish ------------------");
@@ -110,7 +118,12 @@ public class CheckInActorRequestProcessor extends PackageProcessor {
                 /*
                  * Respond whit fail message
                  */
-                ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),ACKRespond.STATUS.FAIL, exception.getLocalizedMessage());
+                ACKRespond respondProfileCheckInMsj = new ACKRespond(packageReceived.getPackageId(),STATUS.FAIL, exception.getLocalizedMessage());
+
+                /**
+                 * Report Logger
+                 */
+                ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.FAIL,packageReceived.toString(),exception);
 
                 LOG.info("------------------ Processing finish ------------------");
                 return Package.createInstance(
