@@ -22,6 +22,7 @@ import org.iop.version_1.structure.util.logger.ReportLogger;
 import javax.websocket.*;
 import javax.websocket.server.ServerEndpoint;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * The Class <code>com.bitdubai.fermat_p2p_plugin.layer.communications.network.node.developer.bitdubai.version_1.structure.channels.endpoinsts.clients.FermatWebSocketClientChannelServerEndpoint</code> this
@@ -55,11 +56,11 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
     /**
      * (non-javadoc)
      *
-     * @see FermatWebSocketChannelEndpoint#getPackageProcessors(PackageType)
+     * @see FermatWebSocketChannelEndpoint#getPackageProcessors()
      */
     @Override
-    protected PackageProcessor getPackageProcessors(PackageType packageType){
-        return NodesPackageProcessorFactory.getClientPackageProcessorsByPackageType(packageType);
+    protected Map<String,PackageProcessor> getPackageProcessors(){
+        return NodesPackageProcessorFactory.getInstance().getClientPackageProcessorsByPackageType();
     }
 
     /**

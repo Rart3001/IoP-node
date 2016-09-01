@@ -15,6 +15,7 @@ import org.iop.version_1.structure.context.NodeContextItem;
 import javax.websocket.EncodeException;
 import javax.websocket.Session;
 import java.io.IOException;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -48,11 +49,17 @@ public abstract class FermatWebSocketChannelEndpoint {
     private ECCKeyPair channelIdentity;
 
     /**
+     * Processors
+     */
+    private Map<String,PackageProcessor> packageProcessors;
+
+    /**
      * Constructor
      */
     public FermatWebSocketChannelEndpoint(){
         super();
-        this.channelIdentity = ((IoPNodePluginRoot) NodeContext.get(NodeContextItem.PLUGIN_ROOT)).getIdentity();
+        this.channelIdentity = ((IoPNodePluginRoot) NodeContext.get(NodeContextItem.PLUGIN_ROOT)).getIdentity(); //new ECCKeyPair(); //
+        packageProcessors = getPackageProcessors();
     }
 
     /**
@@ -80,29 +87,24 @@ public abstract class FermatWebSocketChannelEndpoint {
      * @param session
      */
     protected Package processMessage(Package packageReceived, Session session) throws PackageTypeNotSupportedException {
-
         try {
+        /*
+         * Validate if can process the message
+         */
+            if (!packageProcessors.isEmpty()) {
 
-            PackageProcessor packageProcessor = getPackageProcessors(packageReceived.getPackageType());
             /*
-             * Validate if can process the message
+             * process message and return package to the other side
              */
-            if (packageProcessor != null){
-
-                /*
-                 * Process the message
-                 */
-                return packageProcessor.processingPackage(session, packageReceived, this);
+                return packageProcessors.get(packageReceived.getPackageType().name()).processingPackage(session, packageReceived, this);
 
             } else {
 
-                throw new PackageTypeNotSupportedException("The package type: "+packageReceived.getPackageType()+" is not supported");
+                throw new PackageTypeNotSupportedException("The package type: " + packageReceived.getPackageType() + " is not supported");
             }
-
         }catch (IOException e) {
-
-            LOG.error("error processing package: "+e);
-            LOG.error("packageReceived: "+packageReceived);
+            //todo: ver que pasa cuando la session está caida, quizás no deba hacer anda acá
+            e.printStackTrace();
             return null;
         }
     }
@@ -139,10 +141,11 @@ public abstract class FermatWebSocketChannelEndpoint {
     }
 
     /**
-     * Gets a packageProcessors and returns
+     * Gets the value of packageProcessors and returns
      *
-     * @return packageProcessor
+     * @return packageProcessors
      */
-    protected abstract PackageProcessor getPackageProcessors(PackageType packageType);
+    protected abstract Map<String,PackageProcessor> getPackageProcessors();
+
 
 }
