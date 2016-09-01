@@ -10,3 +10,6 @@ include ':IoP-node'
 //include 'console-network-service'
 
 //include 'IoPClient'
+include 'iop-node-monitoring-app'
+include 'iop-node-monitor-app'
+

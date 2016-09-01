@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://java.sun.com/xml/ns/persistence
+ http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd" version="1.0">
+
+    <persistence-unit name="node-pu">
+        <description>IoP Node Persistence Unit</description>
+        <provider>com.objectdb.jpa.Provider</provider>
+        <class>org.iop.version_1.structure.database.jpa.entities.ActorCatalog</class>
+        <class>org.iop.version_1.structure.database.jpa.entities.Client</class>
+        <class>org.iop.version_1.structure.database.jpa.entities.GeoLocation</class>
+        <class>org.iop.version_1.structure.database.jpa.entities.NetworkService</class>
+        <class>org.iop.version_1.structure.database.jpa.entities.NodeCatalog</class>
+        <properties>
+            <property name="javax.persistence.jdbc.url" value="objectdb://localhost/network_node.odb"/>
+            <property name="javax.persistence.jdbc.user" value="admin"/>
+            <property name="javax.persistence.jdbc.password" value="admin"/>
+            <property name="javax.jdo.option.MinPool" value="50"/>
+            <property name="javax.jdo.option.MaxPool" value="200"/>
+            <property name="javax.persistence.sharedCache.mode" value="DISABLE_SELECTIVE"/>
+        </properties>
+    </persistence-unit>
+
+</persistence>

@@ -47,7 +47,6 @@ dependencies {
     compile 'org.eclipse.jetty.websocket:javax-websocket-server-impl:9.3.11.v20160721'
     compile 'org.eclipse.jetty:jetty-servlet:9.3.11.v20160721'
     compile 'org.eclipse.jetty:jetty-webapp:9.3.11.v20160721'
-    compile 'org.eclipse.jetty:jetty-webapp:9.3.11.v20160721'
 
     compile 'org.slf4j:slf4j-log4j12:1.7.21'
     compile 'commons-configuration:commons-configuration:1.10'

@@ -1,0 +1,15 @@
+
+
+table Block {
+    packages : [Package];
+}
+
+table Package {
+    id : string;
+    content : string;
+    package_type : short;
+    destination_pk : string;
+}
+
+
+root_type Block;
