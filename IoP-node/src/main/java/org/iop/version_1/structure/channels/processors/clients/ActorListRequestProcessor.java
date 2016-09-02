@@ -81,11 +81,11 @@ public class ActorListRequestProcessor extends PackageProcessor {
                  */
                 ReportLogger.infoProcessor(getClass(),packageReceived.getPackageType(),STATUS.SUCCESS,packageReceived.toString());
 
-                LOG.info("Responding actor list, size:  " + actorsList.size());
+                LOG.info("Responding actor list, size:  " + (actorsList != null ? actorsList.size() : 0) );
                 return Package.createInstance(
                         packageReceived.getPackageId(),
-                        actorListMsgRespond.toJson()                      ,
-                        PackageType.ACTOR_LIST_REQUEST                         ,
+                        actorListMsgRespond.toJson(),
+                        PackageType.ACTOR_LIST_REQUEST,
                         channel.getChannelIdentity().getPrivateKey(),
                         destinationIdentityPublicKey
                 );
@@ -146,7 +146,7 @@ public class ActorListRequestProcessor extends PackageProcessor {
         int offset =  0;
 
         if (discoveryQueryParameters.getMax() != null && discoveryQueryParameters.getMax() > 0)
-            max = (discoveryQueryParameters.getMax() > 100) ? 100 : discoveryQueryParameters.getMax();
+            max = (discoveryQueryParameters.getMax() > 20) ? 20 : discoveryQueryParameters.getMax();
 
         if (discoveryQueryParameters.getOffset() != null && discoveryQueryParameters.getOffset() >= 0)
             offset = discoveryQueryParameters.getOffset();
@@ -204,6 +204,7 @@ public class ActorListRequestProcessor extends PackageProcessor {
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             LOG.error(e);
             return ProfileStatus.UNKNOWN;
         }

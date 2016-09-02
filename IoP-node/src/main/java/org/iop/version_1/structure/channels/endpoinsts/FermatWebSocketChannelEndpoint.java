@@ -114,14 +114,13 @@ public abstract class FermatWebSocketChannelEndpoint {
      * @param session
      * @param packageId
      * @param packageContent
-     * @param networkServiceType
      * @param packageType
      * @param destinationIdentityPublicKey
      * @throws IOException
      * @throws EncodeException
      * @throws IllegalArgumentException
      */
-    public void sendPackage(Session session, UUID packageId, String packageContent, NetworkServiceType networkServiceType, PackageType packageType, String destinationIdentityPublicKey) throws IOException, EncodeException, IllegalArgumentException {
+    public void sendPackage(Session session, UUID packageId, String packageContent, PackageType packageType, String destinationIdentityPublicKey) throws IOException, EncodeException, IllegalArgumentException {
 
         if (session==null) throw new IllegalArgumentException("Session can't be null");
         if (session.isOpen()) {
