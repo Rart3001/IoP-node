@@ -99,6 +99,7 @@ public class ActorListRequestProcessor extends PackageProcessor {
 
             try {
 
+                exception.printStackTrace();
                 LOG.error(exception);
 
                 /*
