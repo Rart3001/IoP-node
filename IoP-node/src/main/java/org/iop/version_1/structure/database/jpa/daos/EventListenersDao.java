@@ -6,7 +6,6 @@ package org.iop.version_1.structure.database.jpa.daos;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantDeleteRecordDataBaseException;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantReadRecordDataBaseException;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.iop.version_1.structure.database.jpa.entities.EventListener;
 
@@ -28,7 +27,7 @@ public class EventListenersDao extends AbstractBaseDao<EventListener>{
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(EventListenersDao.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor

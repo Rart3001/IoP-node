@@ -9,7 +9,6 @@ package org.iop.version_1.structure.util;
 
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.configuration.PropertiesConfiguration;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.iop.version_1.structure.conf.EmbeddedNodeServerConf;
 
@@ -31,7 +30,7 @@ public class ConfigurationManager {
     /**
      * Represent the logger instance
      */
-    private static final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(ConfigurationManager.class));
+    private static final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Represent the value of DIR_NAME

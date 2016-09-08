@@ -2,7 +2,6 @@ package org.iop.version_1.structure.util;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.common.com.google.flatbuffers.FlatBufferBuilder;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 
 import javax.websocket.EncodeException;
@@ -21,7 +20,7 @@ import java.nio.ByteBuffer;
  */
 public class PackageEncoder implements Encoder.Binary<Package>{
 
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(PackageEncoder.class.getName()));
+    private final Logger LOG = Logger.getLogger("debugLogger");
     /**
      * (non-javadoc)
      * @see Text#encode(Object)

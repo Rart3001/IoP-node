@@ -4,7 +4,6 @@ import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.exception.PackageTypeNotSupportedException;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.iop.version_1.IoPNodePluginRoot;
 import org.iop.version_1.structure.channels.processors.PackageProcessor;
@@ -30,7 +29,7 @@ public abstract class FermatWebSocketChannelEndpoint {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(FermatWebSocketChannelEndpoint.class.getName()));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Represent the MAX_MESSAGE_SIZE

@@ -1,6 +1,5 @@
 package org.iop.version_1.structure;
 
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.annotations.ServletContainerInitializersStarter;
 import org.eclipse.jetty.server.Server;
@@ -35,7 +34,7 @@ public class JettyEmbeddedAppServer {
     /**
      * Represent the logger instance
      */
-    private static Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(JettyEmbeddedAppServer.class));
+    private static Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Represent the DEFAULT_CONTEXT_PATH value (/fermat)

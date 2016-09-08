@@ -8,7 +8,6 @@ import com.bitdubai.fermat_api.layer.osa_android.location_system.Location;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.DiscoveryQueryParameters;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantReadRecordDataBaseException;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.network_services.database.exceptions.CantUpdateRecordDataBaseException;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.iop.version_1.structure.database.jpa.entities.GeoLocation;
 import org.iop.version_1.structure.database.jpa.entities.NodeCatalog;
@@ -33,7 +32,7 @@ public class NodeCatalogDao extends AbstractBaseDao<NodeCatalog> {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(NodeCatalogDao.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor

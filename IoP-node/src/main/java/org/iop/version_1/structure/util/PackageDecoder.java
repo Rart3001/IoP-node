@@ -3,7 +3,6 @@ package org.iop.version_1.structure.util;
 
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.Package;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 
 import javax.websocket.DecodeException;
@@ -23,7 +22,7 @@ public class PackageDecoder implements Decoder.Binary<Package>{
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(PackageDecoder.class.getName()));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * (non-javadoc)

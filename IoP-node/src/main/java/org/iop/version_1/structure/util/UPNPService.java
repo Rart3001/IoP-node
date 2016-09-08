@@ -1,6 +1,5 @@
 package org.iop.version_1.structure.util;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.bitlet.weupnp.GatewayDevice;
 import org.bitlet.weupnp.GatewayDiscover;
@@ -20,7 +19,7 @@ public final class UPNPService {
     /**
      * Represent the LOG
      */
-    private static final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(UPNPService.class));
+    private static final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Represent the TCP_PROTOCOL

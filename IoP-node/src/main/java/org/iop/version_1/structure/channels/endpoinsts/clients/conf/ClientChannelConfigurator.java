@@ -2,7 +2,6 @@ package org.iop.version_1.structure.channels.endpoinsts.clients.conf;
 
 import com.bitdubai.fermat_api.layer.all_definition.crypto.asymmetric.ECCKeyPair;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 
 import javax.websocket.HandshakeResponse;
@@ -24,7 +23,7 @@ public class ClientChannelConfigurator extends ServerEndpointConfig.Configurator
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(ClientChannelConfigurator.class.getName()));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * (non-javadoc)

@@ -6,7 +6,6 @@ import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.da
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.commons.data.client.respond.base.STATUS;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.HeadersAttName;
 import com.bitdubai.fermat_p2p_api.layer.all_definition.communication.enums.PackageType;
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.eclipse.jetty.websocket.api.MessageTooLargeException;
 import org.iop.version_1.structure.channels.endpoinsts.FermatWebSocketChannelEndpoint;
@@ -44,7 +43,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(FermatWebSocketClientChannelServerEndpoint.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor
@@ -154,7 +153,7 @@ public class FermatWebSocketClientChannelServerEndpoint extends FermatWebSocketC
 
     @OnMessage
     public void onPongMessage(PongMessage message) {
-        LOG.debug("Pong message receive from server = " + message);
+        LOG.debug("Pong message receive from client = " + message);
     }
 
     /**

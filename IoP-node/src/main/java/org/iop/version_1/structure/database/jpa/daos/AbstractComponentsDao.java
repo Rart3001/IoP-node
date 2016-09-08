@@ -14,7 +14,7 @@ import javax.persistence.Query;
  */
 public abstract class AbstractComponentsDao<E extends AbstractBaseEntity> extends AbstractBaseDao<E> {
 
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(AbstractComponentsDao.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
     /**
      * Constructor
      *

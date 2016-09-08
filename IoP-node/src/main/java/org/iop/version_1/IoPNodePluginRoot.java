@@ -48,8 +48,6 @@ public class IoPNodePluginRoot extends AbstractPlugin implements NetworkNodeMana
      */
     private static final Logger LOG = Logger.getLogger("debugLogger");
 
-    static final Logger resultLog = Logger.getLogger("reportsLogger");
-
     @NeededAddonReference(platform = Platforms.OPERATIVE_SYSTEM_API, layer = Layers.SYSTEM, addon = Addons.DEVICE_LOCATION)
     private LocationManager locationManager;
 

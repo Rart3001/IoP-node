@@ -1,6 +1,5 @@
 package org.iop.version_1.structure.database.jpa.daos;
 
-import org.apache.commons.lang.ClassUtils;
 import org.apache.log4j.Logger;
 import org.iop.version_1.structure.database.jpa.entities.GeoLocation;
 
@@ -12,7 +11,7 @@ public class GeoLocationDao extends AbstractBaseDao<GeoLocation> {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(ClientDao.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Constructor

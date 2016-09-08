@@ -37,7 +37,7 @@ public class AbstractBaseDao<E extends AbstractBaseEntity> {
     /**
      * Represent the LOG
      */
-    private final Logger LOG = Logger.getLogger(ClassUtils.getShortClassName(AbstractBaseDao.class));
+    private final Logger LOG = Logger.getLogger("debugLogger");
 
     /**
      * Represent the entityClass
