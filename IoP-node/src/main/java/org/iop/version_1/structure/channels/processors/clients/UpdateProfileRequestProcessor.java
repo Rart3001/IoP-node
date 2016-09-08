@@ -84,6 +84,7 @@ public class UpdateProfileRequestProcessor extends PackageProcessor {
 
                 ActorCatalog actorCatalogToUpdate = new ActorCatalog(actorProfile, thumbnail, getNetworkNodePluginRoot().getNodeProfile().getIdentityPublicKey(), "");
                 actorCatalogToUpdate.setThumbnail(thumbnail);
+                actorCatalogToUpdate.setSession(session.getId());
                 actorCatalogDao.update(actorCatalogToUpdate);
 
                 /*
